@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
-import { CreateURLDto } from 'src/url/url.dto';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { CreateUserDto, DeleteUserDto } from './user.dto';
 import { UserService } from './user.service';
 
@@ -17,22 +8,23 @@ export class UserController {
 
   @Get()
   findUser(@Query('id') intraID: string) {
-    if (intraID !== undefined) return this.userService.findUser(intraID);
-    else return {};
+    if (intraID === undefined) {
+      return {};
+    }
+    return this.userService.findUser(intraID);
   }
 
   @Post()
-  createNewUser(@Body() req: CreateUserDto) {
+  async createNewUser(@Body() req: CreateUserDto) {
+    const user = await this.userService.getUser(req.intraID);
+    if (user !== null) {
+      return false;
+    }
     return this.userService.createNewUser(req);
   }
 
   @Delete()
   deleteUser(@Body() req: DeleteUserDto) {
     return this.userService.deleteUser(req.intraID);
-  }
-
-  @Patch()
-  createURL(@Query('id') intraID: string, @Body() url: CreateURLDto) {
-    return this.userService.createURL(intraID, url);
   }
 }

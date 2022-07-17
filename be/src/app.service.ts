@@ -8,6 +8,7 @@ export class AppService {
   constructor(
     @InjectRepository(URL) private readonly urlRepository: Repository<URL>,
   ) {}
+
   async findURL(code: string): Promise<URL> {
     return await this.urlRepository.findOneBy({ mappedURL: code });
   }

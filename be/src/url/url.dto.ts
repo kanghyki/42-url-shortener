@@ -1,13 +1,14 @@
 export interface CreateURLDto {
+  intraID?: string;
   originURL: string;
   mappedURL: string;
 }
 
 export interface DeleteURLDto {
-  urlID: number;
+  mappedURL: string;
 }
 
-export interface UpdataURLDto {
+export interface UpdateURLDto {
   oldMappedURL: string;
   newMappedURL: string;
 }

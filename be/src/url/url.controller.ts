@@ -1,23 +1,30 @@
-import { Controller, Delete, Post, Put } from '@nestjs/common';
-import { CreateURLDto, DeleteURLDto, UpdataURLDto } from './url.dto';
-import { UrlService } from './url.service';
+import { Body, Controller, Delete, Post, Put } from '@nestjs/common';
+import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
+import { URLService } from './url.service';
 
 @Controller('url')
-export class UrlController {
-  constructor(private readonly urlService: UrlService) {}
+export class URLController {
+  constructor(private readonly urlService: URLService) {}
 
   @Post()
-  createURL(req: CreateURLDto) {
-    return this.urlService.createURL(req);
+  async createURL(@Body() req: CreateURLDto) {
+    if (req.intraID === undefined) {
+      return this.urlService.createAnonymousURL(req);
+    }
+    const user = await this.urlService.getUser(req.intraID);
+    if (user === null) {
+      return false;
+    }
+    return this.urlService.createURL(user, req);
   }
 
   @Delete()
-  deleteURL(req: DeleteURLDto) {
-    return this.urlService.deleteURL(req.urlID);
+  deleteURL(@Body() req: DeleteURLDto) {
+    return this.urlService.deleteURL(req);
   }
 
   @Put()
-  UpdataURL(req: UpdataURLDto) {
+  UpdataURL(@Body() req: UpdateURLDto) {
     return this.urlService.updateURL(req);
   }
 }

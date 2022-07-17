@@ -10,10 +10,9 @@ import { UserController } from './user.controller';
 import { UserMiddleware } from './user.middleware';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import { URL } from 'src/url/url.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, URL]), HttpModule],
+  imports: [TypeOrmModule.forFeature([User]), HttpModule],
   controllers: [UserController],
   providers: [UserService],
 })

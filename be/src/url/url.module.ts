@@ -5,20 +5,21 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UrlController } from './url.controller';
-import { UrlMiddleware } from './url.middleware';
+import { URLController } from './url.controller';
+import { URLMiddleware } from './url.middleware';
+import { URLService } from './url.service';
 import { URL } from './url.entity';
-import { UrlService } from './url.service';
+import { User } from 'src/user/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([URL])],
-  controllers: [UrlController],
-  providers: [UrlService],
+  imports: [TypeOrmModule.forFeature([URL, User])],
+  controllers: [URLController],
+  providers: [URLService],
 })
 export class UrlModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(UrlMiddleware)
+      .apply(URLMiddleware)
       .forRoutes({ path: '/url', method: RequestMethod.ALL });
   }
 }

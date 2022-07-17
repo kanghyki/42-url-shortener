@@ -18,6 +18,9 @@ export class URL {
   @Column()
   mappedURL!: string;
 
+  @Column()
+  called!: number;
+
   @ManyToOne(() => User, (user) => user.urls, {
     onDelete: 'CASCADE',
     nullable: true,
