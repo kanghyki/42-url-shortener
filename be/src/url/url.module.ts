@@ -4,12 +4,14 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UrlController } from './url.controller';
 import { UrlMiddleware } from './url.middleware';
+import { URL } from './url.entity';
 import { UrlService } from './url.service';
 
 @Module({
-  imports: [],
+  imports: [TypeOrmModule.forFeature([URL])],
   controllers: [UrlController],
   providers: [UrlService],
 })

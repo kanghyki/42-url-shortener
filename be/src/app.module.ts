@@ -1,18 +1,12 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AppMiddleware } from './app.middleware';
 import { UserModule } from './user/user.module';
 import { UrlModule } from './url/url.module';
 import { User } from './user/user.entity';
-import { Url } from './url/url.entity';
+import { URL } from './url/url.entity';
 
 @Module({
   imports: [
@@ -26,19 +20,14 @@ import { Url } from './url/url.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PW,
       database: process.env.DATABASE_NAME,
-      entities: [User, Url],
+      entities: [User, URL],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([URL]),
     UserModule,
     UrlModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AppMiddleware)
-      .forRoutes({ path: '/', method: RequestMethod.ALL });
-  }
-}
+export class AppModule {}

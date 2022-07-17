@@ -1,13 +1,27 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+} from 'typeorm';
+import { User } from 'src/user/user.entity';
 
 @Entity()
-export class Url {
+export class URL {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  originURL: string;
+  originURL!: string;
 
   @Column()
-  mappedURL: string;
+  mappedURL!: string;
+
+  @ManyToOne(() => User, (user) => user.urls, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'user' })
+  user: User;
 }

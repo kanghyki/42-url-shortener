@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { CreateURLDto } from 'src/url/url.dto';
 import { CreateUserDto, DeleteUserDto } from './user.dto';
 import { UserService } from './user.service';
 
@@ -8,7 +17,8 @@ export class UserController {
 
   @Get()
   findUser(@Query('id') intraID: string) {
-    return this.userService.findUser(intraID);
+    if (intraID !== undefined) return this.userService.findUser(intraID);
+    else return {};
   }
 
   @Post()
@@ -19,5 +29,10 @@ export class UserController {
   @Delete()
   deleteUser(@Body() req: DeleteUserDto) {
     return this.userService.deleteUser(req.intraID);
+  }
+
+  @Patch()
+  createURL(@Query('id') intraID: string, @Body() url: CreateURLDto) {
+    return this.userService.createURL(intraID, url);
   }
 }

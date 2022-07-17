@@ -1,7 +1,13 @@
-export interface CreateShortUrlDto {
-  originUrl: string;
+export interface CreateURLDto {
+  originURL: string;
+  mappedURL: string;
 }
 
-export interface DeleteShortUrlDto {
-  urlId: number;
+export interface DeleteURLDto {
+  urlID: number;
+}
+
+export interface UpdataURLDto {
+  oldMappedURL: string;
+  newMappedURL: string;
 }
