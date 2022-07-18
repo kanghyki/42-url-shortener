@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
 import { URL } from './url.entity';
 import { User } from 'src/user/user.entity';
+//import * as bcrypt from 'bcrypt';
+//import * as base62 from 'base62-ts';
 
 @Injectable()
 export class URLService {
@@ -24,30 +26,30 @@ export class URLService {
     });
   }
 
+  // TODO: BASE-62 encoding
+  //async encodeURL(originURL: string): Promise<string> {
+  //  const url_hash = await bcrypt.hash(originURL, 3);
+  //  const url_64 = Buffer.from(url_hash, 'binary').toString('base64');
+  //  const url_62_num = base62.decode(url_64);
+  //  const url_62_str = base62.encode(url_62_num);
+  //  return url_62_str;
+  //}
+
   async createURL(user: User, req: CreateURLDto) {
     if (req.mappedURL === undefined) {
-      req.mappedURL = 'randomhash';
+      //req.mappedURL = await this.encodeURL(req.originURL);
+      return 'No mappedURL';
     }
     const isURL = await this.getURL(req.mappedURL);
     if (isURL !== null) {
-      return false;
+      return 'dup';
     }
     const newURL = this.urlRepository.create(req);
-    newURL.called = 0;
-    const ret = await this.urlRepository.save(newURL);
     newURL.user = user;
-    ret.id = undefined;
-    return ret;
-  }
-
-  async createAnonymousURL(req: CreateURLDto) {
-    if (req.mappedURL === undefined) {
-      req.mappedURL = 'randomhash';
-    }
-    const newURL = this.urlRepository.create(req);
     newURL.called = 0;
     const ret = await this.urlRepository.save(newURL);
     ret.id = undefined;
+    ret.user = undefined;
     return ret;
   }
 

@@ -1,5 +1,5 @@
 export interface CreateURLDto {
-  intraID?: string;
+  intraID: string;
   originURL: string;
   mappedURL: string;
 }

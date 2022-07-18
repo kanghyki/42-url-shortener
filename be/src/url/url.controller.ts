@@ -1,16 +1,28 @@
-import { Body, Controller, Delete, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  //Request,
+  Controller,
+  Delete,
+  Post,
+  Put,
+} from '@nestjs/common';
+//import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
 import { URLService } from './url.service';
+//import { UseGuards } from '@nestjs/common';
 
 @Controller('url')
 export class URLController {
   constructor(private readonly urlService: URLService) {}
 
+  //@UseGuards(LocalAuthGuard)
+  //@Post('auth/login')
+  //async login(@Request() req) {
+  //  return req.user;
+  //}
+
   @Post()
   async createURL(@Body() req: CreateURLDto) {
-    if (req.intraID === undefined) {
-      return this.urlService.createAnonymousURL(req);
-    }
     const user = await this.urlService.getUser(req.intraID);
     if (user === null) {
       return false;
