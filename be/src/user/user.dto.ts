@@ -1,8 +1,10 @@
-export interface CreateUserDto {
-  intraID: string;
-  email: string;
+export interface UserDto {
+  isLogin: boolean;
+  userID: string;
+  password: string;
 }
 
 export interface DeleteUserDto {
-  intraID: string;
+  userID: string;
+  password: string;
 }

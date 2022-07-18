@@ -1,26 +1,10 @@
-import {
-  Body,
-  Controller,
-  //Request,
-  Delete,
-  Get,
-  Post,
-  Query,
-  //UseGuards,
-} from '@nestjs/common';
-import { CreateUserDto, DeleteUserDto } from './user.dto';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import { UserDto, DeleteUserDto } from './user.dto';
 import { UserService } from './user.service';
-//import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  //@UseGuards(LocalAuthGuard)
-  //@Post('auth/login')
-  //async login(@Request() req) {
-  //  return req.user;
-  //}
 
   @Get()
   findUser(@Query('id') intraID: string) {
@@ -31,16 +15,19 @@ export class UserController {
   }
 
   @Post()
-  async createNewUser(@Body() req: CreateUserDto) {
-    const user = await this.userService.getUser(req.intraID);
-    if (user !== null) {
-      return 'No acc';
+  async createNewUser(@Body() req: UserDto) {
+    if (req.isLogin === true) {
+      return this.userService.loginUser(req);
     }
-    return this.userService.createNewUser(req);
+    const user = await this.userService.getUser(req.userID);
+    if (user !== null) {
+      return 'Account already exist';
+    }
+    return await this.userService.createNewUser(req);
   }
 
   @Delete()
   deleteUser(@Body() req: DeleteUserDto) {
-    return this.userService.deleteUser(req.intraID);
+    return this.userService.deleteUser(req);
   }
 }

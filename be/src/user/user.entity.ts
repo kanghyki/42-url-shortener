@@ -14,10 +14,10 @@ export class User {
   id: number;
 
   @Column()
-  intraID: string;
+  userID: string;
 
   @Column()
-  email: string;
+  password: string;
 
   @Column({ default: true })
   isActive: boolean;
@@ -27,9 +27,6 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
-
-  @Column()
-  token: string;
 
   @OneToMany(() => URL, (url) => url.user)
   urls!: URL[];

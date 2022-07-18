@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { UrlModule } from './url/url.module';
 import { User } from './user/user.entity';
 import { URL } from './url/url.entity';
+import { AppService } from './app.service';
+import { URLService } from './url/url.service';
 
 @Module({
   imports: [
@@ -23,11 +24,11 @@ import { URL } from './url/url.entity';
       entities: [User, URL],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([URL]),
+    TypeOrmModule.forFeature([URL, User]),
     UserModule,
     UrlModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, URLService],
 })
 export class AppModule {}

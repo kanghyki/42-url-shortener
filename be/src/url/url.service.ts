@@ -20,10 +20,20 @@ export class URLService {
     });
   }
 
-  async getUser(intraID: string): Promise<User> {
+  async getUser(userID: string): Promise<User> {
     return await this.userRepository.findOneBy({
-      intraID: intraID,
+      userID: userID,
     });
+  }
+
+  async calledURL(shortURL: string) {
+    const url = await this.urlRepository.findOneBy({ mappedURL: shortURL });
+    if (url !== null) {
+      url.called += 1;
+      await this.urlRepository.save(url);
+      return url.originURL;
+    }
+    return false;
   }
 
   // TODO: BASE-62 encoding
