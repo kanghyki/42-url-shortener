@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
 
@@ -6,9 +6,9 @@ import { Response } from 'express';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @Get(':su')
   async redirectURL(
-    @Query('su') url: string,
+    @Param('su') url: string,
     @Res() res: Response,
   ): Promise<any> {
     return this.appService.redirectURL(url, res);

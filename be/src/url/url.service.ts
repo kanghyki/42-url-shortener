@@ -14,24 +14,29 @@ export class URLService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async getURL(url: string): Promise<URL> {
-    return await this.urlRepository.findOneBy({
-      mappedURL: url,
-    });
-  }
-
-  async getUser(userID: string): Promise<User> {
-    return await this.userRepository.findOneBy({
-      userID: userID,
-    });
-  }
-
   async calledURL(shortURL: string) {
     const url = await this.urlRepository.findOneBy({ mappedURL: shortURL });
     if (url !== null) {
       url.called += 1;
       await this.urlRepository.save(url);
       return url.originURL;
+    }
+    return false;
+  }
+
+  async CheckURL(userID: string, URL: string) {
+    const user = await this.userRepository.findOneBy({
+      userID,
+    });
+    const url = await this.urlRepository.findOne({
+      relations: { user: true },
+      where: { mappedURL: URL },
+    });
+    if (user === null || url === null) {
+      return false;
+    }
+    if (url.user.id === user.id) {
+      return true;
     }
     return false;
   }
@@ -45,14 +50,17 @@ export class URLService {
   //  return url_62_str;
   //}
 
-  async createURL(user: User, req: CreateURLDto) {
+  async createURL(req: CreateURLDto): Promise<object> {
+    const user = await this.userRepository.findOneBy({ userID: req.userID });
     if (req.mappedURL === undefined) {
       //req.mappedURL = await this.encodeURL(req.originURL);
-      return 'No mappedURL';
+      return { ok: false, msg: 'No mapped URL(will be implemented)' };
     }
-    const isURL = await this.getURL(req.mappedURL);
-    if (isURL !== null) {
-      return 'dup';
+    const isExistURL = await this.urlRepository.findOneBy({
+      mappedURL: req.mappedURL,
+    });
+    if (isExistURL !== null) {
+      return { ok: false, msg: 'Duplicated URL' };
     }
     const newURL = this.urlRepository.create(req);
     newURL.user = user;
@@ -60,17 +68,22 @@ export class URLService {
     const ret = await this.urlRepository.save(newURL);
     ret.id = undefined;
     ret.user = undefined;
-    return ret;
+    return { ok: true, result: ret };
   }
 
   async deleteURL(req: DeleteURLDto) {
-    return await this.urlRepository.delete({ mappedURL: req.mappedURL });
+    const isOwner = await this.CheckURL(req.userID, req.mappedURL);
+    if (isOwner === false) {
+      return { ok: false, msg: 'Something went wrong' };
+    }
+    const ret = await this.urlRepository.delete({ mappedURL: req.mappedURL });
+    return { ok: true, result: ret };
   }
 
   async updateURL(req: UpdateURLDto) {
-    const isURL = await this.getURL(req.newMappedURL);
-    if (isURL !== null) {
-      return false;
+    const isOwner = await this.CheckURL(req.userID, req.oldMappedURL);
+    if (isOwner === false) {
+      return { ok: false, msg: 'Something went wrong' };
     }
     const findURL = await this.urlRepository.findOneBy({
       mappedURL: req.oldMappedURL,
@@ -78,6 +91,6 @@ export class URLService {
     findURL.mappedURL = req.newMappedURL;
     const ret = await this.urlRepository.save(findURL);
     ret.id = undefined;
-    return ret;
+    return { ok: true, result: ret };
   }
 }

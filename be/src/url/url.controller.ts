@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { PasswordGuard } from 'src/auth/auth.guard';
 import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
 import { URLService } from './url.service';
 
@@ -7,20 +15,19 @@ export class URLController {
   constructor(private readonly urlService: URLService) {}
 
   @Post()
+  @UseGuards(PasswordGuard)
   async createURL(@Body() req: CreateURLDto) {
-    const user = await this.urlService.getUser(req.intraID);
-    if (user === null) {
-      return false;
-    }
-    return this.urlService.createURL(user, req);
+    return this.urlService.createURL(req);
   }
 
   @Delete()
+  @UseGuards(PasswordGuard)
   deleteURL(@Body() req: DeleteURLDto) {
     return this.urlService.deleteURL(req);
   }
 
-  @Put()
+  @Patch()
+  @UseGuards(PasswordGuard)
   UpdataURL(@Body() req: UpdateURLDto) {
     return this.urlService.updateURL(req);
   }

@@ -1,33 +1,34 @@
-import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
-import { UserDto, DeleteUserDto } from './user.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { UserDto } from './user.dto';
 import { UserService } from './user.service';
+import { PasswordGuard } from 'src/auth/auth.guard';
 
-@Controller('user')
+@Controller('/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  findUser(@Query('id') intraID: string) {
-    if (intraID === undefined) {
-      return {};
-    }
-    return this.userService.findUser(intraID);
+  @UseGuards(PasswordGuard)
+  findUser(@Query('id') userID: string) {
+    return this.userService.getUser(userID);
   }
 
   @Post()
   async createNewUser(@Body() req: UserDto) {
-    if (req.isLogin === true) {
-      return this.userService.loginUser(req);
-    }
-    const user = await this.userService.getUser(req.userID);
-    if (user !== null) {
-      return 'Account already exist';
-    }
     return await this.userService.createNewUser(req);
   }
 
   @Delete()
-  deleteUser(@Body() req: DeleteUserDto) {
+  @UseGuards(PasswordGuard)
+  deleteUser(@Body() req: UserDto) {
     return this.userService.deleteUser(req);
   }
 }
