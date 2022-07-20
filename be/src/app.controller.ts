@@ -1,16 +1,18 @@
-import { Controller, Get, Param, Query, Res } from '@nestjs/common';
+import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Response } from 'express';
+import { AuthService } from './auth/auth.service';
+import { PasswordGuard } from './auth/auth.guard';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private authService: AuthService,
+  ) {}
 
-  @Get(':su')
-  async redirectURL(
-    @Param('su') url: string,
-    @Res() res: Response,
-  ): Promise<any> {
-    return this.appService.redirectURL(url, res);
+  @Post('auth/login')
+  @UseGuards(PasswordGuard)
+  async login(@Request() req) {
+    return this.authService.getJwtToken();
   }
 }

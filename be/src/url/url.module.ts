@@ -12,11 +12,12 @@ import { URL } from './url.entity';
 import { User } from 'src/user/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [TypeOrmModule.forFeature([URL, User])],
   controllers: [URLController],
-  providers: [URLService, AuthService, UserService],
+  providers: [URLService, AuthService, UserService, JwtService],
 })
 export class UrlModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

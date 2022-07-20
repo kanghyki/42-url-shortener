@@ -1,14 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { UserModule } from './user/user.module';
-import { UrlModule } from './url/url.module';
-import { User } from './user/user.entity';
-import { URL } from './url/url.entity';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { JwtService } from '@nestjs/jwt';
+import { User } from './entity/user.entity';
+import { URL } from './entity/url.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -23,13 +19,10 @@ import { JwtService } from '@nestjs/jwt';
       password: process.env.DATABASE_PW,
       database: process.env.DATABASE_NAME,
       entities: [User, URL],
-      synchronize: true,
     }),
-    UserModule,
-    UrlModule,
-    AuthModule,
+    TypeOrmModule.forFeature([URL]),
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService],
+  providers: [AppService],
 })
 export class AppModule {}
