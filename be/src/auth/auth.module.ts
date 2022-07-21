@@ -4,27 +4,23 @@ import { UserModule } from 'src/user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { User } from 'src/user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     UserModule,
     PassportModule,
-    JwtModule.register({
-      //secret: process.env.JWT_SECRET,
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1d' },
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1d' },
+      }),
     }),
-    //JwtModule.registerAsync({
-    //  inject: [ConfigService],
-    //  useFactory: (config: ConfigService) => ({
-    //    secret: config.get<string>('JWT_SECRET'),
-    //    signOptions: { expiresIn: '1d' },
-    //  }),
-    //}),
   ],
-  providers: [AuthService, JwtService],
+  providers: [AuthService],
   exports: [AuthService],
 })
 export class AuthModule {}

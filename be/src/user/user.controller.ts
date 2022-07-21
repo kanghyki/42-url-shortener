@@ -4,31 +4,41 @@ import {
   Delete,
   Get,
   Post,
-  Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { UserDto } from './user.dto';
+import { JwtGuard } from 'src/auth/auth.guard';
+import { AuthService } from 'src/auth/auth.service';
+import { CreateUserDto } from './user.dto';
 import { UserService } from './user.service';
-import { PasswordGuard } from 'src/auth/auth.guard';
 
 @Controller('/user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
+  @UseGuards(JwtGuard)
   @Get()
-  @UseGuards(PasswordGuard)
-  findUser(@Query('id') userID: string) {
-    return this.userService.getUser(userID);
+  async findUser(@Req() req) {
+    const JwtUserID = await this.authService.findJwtOwner(
+      req.headers.authorization,
+    );
+    return this.userService.getUser(JwtUserID);
   }
 
   @Post()
-  async createNewUser(@Body() req: UserDto) {
+  async createNewUser(@Body() req: CreateUserDto) {
     return await this.userService.createNewUser(req);
   }
 
+  @UseGuards(JwtGuard)
   @Delete()
-  @UseGuards(PasswordGuard)
-  deleteUser(@Body() req: UserDto) {
-    return this.userService.deleteUser(req);
+  async deleteUser(@Req() req) {
+    const JwtUserID = await this.authService.findJwtOwner(
+      req.headers.authorization,
+    );
+    return this.userService.deleteUser(JwtUserID);
   }
 }

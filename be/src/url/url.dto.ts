@@ -1,16 +1,13 @@
 export interface CreateURLDto {
-  userID: string;
   originURL: string;
-  mappedURL: string;
+  shortURL: string;
 }
 
 export interface DeleteURLDto {
-  userID: string;
-  mappedURL: string;
+  shortURL: string;
 }
 
 export interface UpdateURLDto {
-  userID: string;
-  oldMappedURL: string;
-  newMappedURL: string;
+  shortURL: string;
+  newURL: string;
 }

@@ -13,9 +13,16 @@ import { User } from 'src/user/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([URL, User])],
+  imports: [
+    TypeOrmModule.forFeature([URL, User]),
+    HttpModule.register({
+      timeout: 5000,
+      maxRedirects: 5,
+    }),
+  ],
   controllers: [URLController],
   providers: [URLService, AuthService, UserService, JwtService],
 })

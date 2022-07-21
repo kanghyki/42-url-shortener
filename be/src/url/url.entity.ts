@@ -15,8 +15,10 @@ export class URL {
   @Column()
   originURL!: string;
 
-  @Column()
-  mappedURL!: string;
+  @Column({
+    unique: true,
+  })
+  shortURL!: string;
 
   @Column()
   called!: number;

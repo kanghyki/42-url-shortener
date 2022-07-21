@@ -4,31 +4,45 @@ import {
   Delete,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { PasswordGuard } from 'src/auth/auth.guard';
+import { JwtGuard } from 'src/auth/auth.guard';
+import { AuthService } from 'src/auth/auth.service';
 import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
 import { URLService } from './url.service';
 
 @Controller('url')
 export class URLController {
-  constructor(private readonly urlService: URLService) {}
+  constructor(
+    private readonly urlService: URLService,
+    private readonly authService: AuthService,
+  ) {}
 
+  @UseGuards(JwtGuard)
   @Post()
-  @UseGuards(PasswordGuard)
-  async createURL(@Body() req: CreateURLDto) {
-    return this.urlService.createURL(req);
+  async createURL(@Req() req, @Body() body: CreateURLDto) {
+    const JwtUserID = await this.authService.findJwtOwner(
+      req.headers.authorization,
+    );
+    return this.urlService.createURL(JwtUserID, body);
   }
 
+  @UseGuards(JwtGuard)
   @Delete()
-  @UseGuards(PasswordGuard)
-  deleteURL(@Body() req: DeleteURLDto) {
-    return this.urlService.deleteURL(req);
+  async deleteURL(@Req() req, @Body() body: DeleteURLDto) {
+    const JwtUserID = await this.authService.findJwtOwner(
+      req.headers.authorization,
+    );
+    return this.urlService.deleteURL(JwtUserID, body);
   }
 
+  @UseGuards(JwtGuard)
   @Patch()
-  @UseGuards(PasswordGuard)
-  UpdataURL(@Body() req: UpdateURLDto) {
-    return this.urlService.updateURL(req);
+  async UpdataURL(@Req() req, @Body() body: UpdateURLDto) {
+    const JwtUserID = await this.authService.findJwtOwner(
+      req.headers.authorization,
+    );
+    return this.urlService.updateURL(JwtUserID, body);
   }
 }
