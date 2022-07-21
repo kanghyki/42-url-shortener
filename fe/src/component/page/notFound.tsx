@@ -1,7 +1,12 @@
-import Header from "../header/header";
+import Header from '../header/header';
 
-function NotFound(){
-	return <div><Header/>404 Not found</div>
+function NotFound() {
+  return (
+    <div>
+      <Header />
+      404 Not found
+    </div>
+  );
 }
 
-export default NotFound
+export default NotFound;

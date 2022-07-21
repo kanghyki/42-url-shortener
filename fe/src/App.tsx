@@ -12,9 +12,9 @@ function App() {
       <Router basename={process.env.REACT_APP_BASE_NAME}>
         <Routes>
           <Route path="/" element={<Main />} />
-          <Route path="/create" element={<CreateUser/>} />
+          <Route path="/create" element={<CreateUser />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/mypage" element={<Mypage/>} />
+          <Route path="/mypage" element={<Mypage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
