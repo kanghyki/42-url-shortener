@@ -1,12 +1,6 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { URLController } from './url.controller';
-import { URLMiddleware } from './url.middleware';
 import { URLService } from './url.service';
 import { URL } from './url.entity';
 import { User } from 'src/user/user.entity';
@@ -26,10 +20,4 @@ import { HttpModule } from '@nestjs/axios';
   controllers: [URLController],
   providers: [URLService, AuthService, UserService, JwtService],
 })
-export class UrlModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(URLMiddleware)
-      .forRoutes({ path: '/url', method: RequestMethod.ALL });
-  }
-}
+export class UrlModule {}

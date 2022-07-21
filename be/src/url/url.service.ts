@@ -18,17 +18,18 @@ export class URLService {
 
   async calledURL(shortURL: string) {
     const url = await this.urlRepository.findOneBy({ shortURL: shortURL });
-    if (url !== null) {
-      url.called += 1;
-      await this.urlRepository.save(url);
-      return url.originURL;
+    if (url === null) {
+      return false;
     }
-    return false;
+
+    url.called += 1;
+    await this.urlRepository.save(url);
+    return url.originURL;
   }
 
-  async isURLOwner(userID: string, url: string) {
+  async comfirmURLOwnership(userID: string, url: string) {
     const user = await this.userRepository.findOneBy({
-      userID,
+      userID: userID,
     });
     const findURL = await this.urlRepository.findOne({
       relations: { user: true },
@@ -37,13 +38,13 @@ export class URLService {
     if (user === null || findURL === null) {
       return false;
     }
-    if (findURL.user.id === user.id) {
-      return true;
+    if (findURL.user.id !== user.id) {
+      return false;
     }
-    return false;
+
+    return true;
   }
 
-  // TODO: BASE-62 encoding
   async encodeURL(originURL: string): Promise<string> {
     const url_hash = await bcrypt.hash(originURL, 10);
     //const url_62_num = base62.decode(url_hash);
@@ -52,62 +53,45 @@ export class URLService {
   }
 
   async createURL(userID: string, body: CreateURLDto): Promise<object> {
-    if (body.originURL === undefined || body.shortURL === undefined) {
-      return { ok: false, msg: 'Wrong Query' };
-    }
-
-    const user = await this.userRepository.findOneBy({ userID: userID });
-
     try {
       await this.httpService.axiosRef.get(body.originURL);
     } catch (e) {
       return { ok: false, msg: 'Unhealth Origin URL Server' };
     }
-
-    if (body.originURL)
-      if (body.shortURL.length <= 0) {
-        body.shortURL = await this.encodeURL(body.originURL);
-      }
-    const isAlreadyExistURL = await this.urlRepository.findOneBy({
-      shortURL: body.shortURL,
-    });
-
-    if (isAlreadyExistURL !== null) {
+    if (body.shortURL.length <= 0) {
+      body.shortURL = await this.encodeURL(body.originURL);
+    }
+    if (
+      (await this.urlRepository.findOneBy({
+        shortURL: body.shortURL,
+      })) !== null
+    ) {
       return { ok: false, msg: 'Duplicated URL' };
     }
 
+    const user = await this.userRepository.findOneBy({ userID: userID });
     const newURL = this.urlRepository.create(body);
     newURL.user = user;
     newURL.called = 0;
     const ret = await this.urlRepository.save(newURL);
+
     ret.id = undefined;
     ret.user = undefined;
     return { ok: true, result: ret };
   }
 
   async deleteURL(userID: string, body: DeleteURLDto) {
-    if (body.shortURL === undefined) {
-      return { ok: false, msg: 'Wrong Query' };
-    }
-
-    const isOwner = await this.isURLOwner(userID, body.shortURL);
-    if (isOwner === false) {
-      return { ok: false, msg: 'Something went wrong' };
+    if ((await this.comfirmURLOwnership(userID, body.shortURL)) === false) {
+      return { ok: false, msg: 'You have not Ownership' };
     }
 
     const ret = await this.urlRepository.delete({ shortURL: body.shortURL });
-
     return { ok: true, result: ret };
   }
 
   async updateURL(userID: string, body: UpdateURLDto) {
-    if (body.newURL === undefined || body.shortURL === undefined) {
-      return { ok: false, msg: 'Wrong Query' };
-    }
-
-    const isOwner = await this.isURLOwner(userID, body.shortURL);
-    if (isOwner === false) {
-      return { ok: false, msg: 'Something went wrong' };
+    if ((await this.comfirmURLOwnership(userID, body.shortURL)) === false) {
+      return { ok: false, msg: 'You have not Ownership' };
     }
 
     const findURL = await this.urlRepository.findOneBy({
@@ -115,8 +99,8 @@ export class URLService {
     });
     findURL.shortURL = body.newURL;
     findURL.called = 0;
-
     const ret = await this.urlRepository.save(findURL);
+
     ret.id = undefined;
     return { ok: true, result: ret };
   }

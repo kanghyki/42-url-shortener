@@ -21,24 +21,30 @@ export class UserController {
 
   @UseGuards(JwtGuard)
   @Get()
-  async findUser(@Req() req) {
-    const JwtUserID = await this.authService.findJwtOwner(
+  async findUser(@Req() req: any) {
+    const JwtUserID = await this.authService.getJwtUserID(
       req.headers.authorization,
     );
+
     return this.userService.getUser(JwtUserID);
   }
 
   @Post()
-  async createNewUser(@Body() req: CreateUserDto) {
-    return await this.userService.createNewUser(req);
+  async createNewUser(@Body() body: CreateUserDto) {
+    if (body.userID === undefined || body.password === undefined) {
+      return { ok: false, msg: 'Wrong Query' };
+    }
+
+    return await this.userService.createNewUser(body);
   }
 
   @UseGuards(JwtGuard)
   @Delete()
-  async deleteUser(@Req() req) {
-    const JwtUserID = await this.authService.findJwtOwner(
+  async deleteUser(@Req() req: any) {
+    const JwtUserID = await this.authService.getJwtUserID(
       req.headers.authorization,
     );
+
     return this.userService.deleteUser(JwtUserID);
   }
 }

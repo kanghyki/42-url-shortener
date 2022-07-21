@@ -22,7 +22,7 @@ export class UserService {
     req.password = hashPW;
     const newUser = this.userRepository.create(req);
     await this.userRepository.save(newUser);
-    return { ok: true, msg: newUser };
+    return { ok: true, msg: 'Created' };
   }
 
   async getUser(id: string): Promise<User[]> {

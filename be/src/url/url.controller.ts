@@ -21,28 +21,40 @@ export class URLController {
 
   @UseGuards(JwtGuard)
   @Post()
-  async createURL(@Req() req, @Body() body: CreateURLDto) {
-    const JwtUserID = await this.authService.findJwtOwner(
+  async createURL(@Req() req: any, @Body() body: CreateURLDto) {
+    const JwtUserID = await this.authService.getJwtUserID(
       req.headers.authorization,
     );
+    if (body.originURL === undefined || body.shortURL === undefined) {
+      return { ok: false, msg: 'Wrong Query' };
+    }
+
     return this.urlService.createURL(JwtUserID, body);
   }
 
   @UseGuards(JwtGuard)
   @Delete()
-  async deleteURL(@Req() req, @Body() body: DeleteURLDto) {
-    const JwtUserID = await this.authService.findJwtOwner(
+  async deleteURL(@Req() req: any, @Body() body: DeleteURLDto) {
+    const JwtUserID = await this.authService.getJwtUserID(
       req.headers.authorization,
     );
+    if (body.shortURL === undefined) {
+      return { ok: false, msg: 'Wrong Query' };
+    }
+
     return this.urlService.deleteURL(JwtUserID, body);
   }
 
   @UseGuards(JwtGuard)
   @Patch()
-  async UpdataURL(@Req() req, @Body() body: UpdateURLDto) {
-    const JwtUserID = await this.authService.findJwtOwner(
+  async UpdataURL(@Req() req: any, @Body() body: UpdateURLDto) {
+    const JwtUserID = await this.authService.getJwtUserID(
       req.headers.authorization,
     );
+    if (body.newURL === undefined || body.shortURL === undefined) {
+      return { ok: false, msg: 'Wrong Query' };
+    }
+
     return this.urlService.updateURL(JwtUserID, body);
   }
 }

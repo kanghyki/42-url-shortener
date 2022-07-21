@@ -52,11 +52,12 @@ export class AuthService {
     }
   }
 
-  async findJwtOwner(tokenString: string) {
-    const [type, token] = tokenString.split(/[ ]/);
+  async getJwtUserID(tokenString: string) {
+    const [type, token] = tokenString.split(' ', 2);
     const ret = await this.jwtService.verify(token, {
       secret: process.env.JWT_SECRET,
     });
+
     return ret.userID;
   }
 

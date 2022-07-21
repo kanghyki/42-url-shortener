@@ -8,7 +8,7 @@ export class AppController {
 
   @UseGuards(LoginGuard)
   @Post('auth/login')
-  async login(@Request() req) {
+  async login(@Request() req: any) {
     return await this.authService.successLogin(req.body.userID);
   }
 }
