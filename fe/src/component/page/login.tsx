@@ -54,7 +54,7 @@ function Login() {
       <Header />
 	  <h1>Login</h1>
       <InputBox onChange={onChangeID} placeholder="ID" />
-      <InputBox type='password' required onChange={onChangePassword} placeholder="PASSWORD" />
+      <InputBox type='password' required onChange={onChangePassword} placeholder="PASSWORD" onKeyDown={(e)=> {if (e.key === 'Enter')Login()}}/>
       <Button onClick={Login}>Login</Button>
 	  <LinkBox to="/create">
 		create user

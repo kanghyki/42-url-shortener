@@ -43,12 +43,13 @@ function CreateUser() {
       }
     });
   };
+
   return (
     <div>
       <Header />
 	  <h1>Create User</h1>
       <InputBox onChange={onChangeID} placeholder="ID" />
-	  <InputBox type='password' required onChange={onChangePassword} placeholder="PASSWORD" />
+	  <InputBox type='password' required onChange={onChangePassword} placeholder="PASSWORD" onKeyDown={(e)=> {if (e.key === 'Enter')Create()}}/>
       <Button onClick={Create}>Create</Button>
     </div>
   );

@@ -54,17 +54,18 @@ function Main() {
 					}
 				});
 			} else {
-				alert('Check Login');
+				alert('Please Login');
 				document.location.href = '/login';
 			}
 		});
   };
+
   return (
     <div>
       <Header />
       <h1>Create URL</h1>
       <InputBox onChange={onChangeOrigin} placeholder="Origin URL" />
-      <InputBox onChange={onChangeCustom} placeholder="Custom URL(nullable)" />
+      <InputBox onChange={onChangeCustom} placeholder="Custom URL(nullable)" onKeyDown={(e)=> {if (e.key === 'Enter')CreateURL()}}/>
       <Button onClick={CreateURL}>Create URL</Button>
 	  <div>{ret.ok === true ? <div>Generate: localhost:3002/{ret.result.shortURL}</div>:<div/>}</div>
     </div>
