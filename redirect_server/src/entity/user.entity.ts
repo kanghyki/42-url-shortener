@@ -13,11 +13,19 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    unique: true,
+  })
   userID: string;
 
   @Column()
   password: string;
+
+  @Column({
+    unique: true,
+    nullable: true,
+  })
+  token: string;
 
   @Column({ default: true })
   isActive: boolean;
