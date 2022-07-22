@@ -41,7 +41,12 @@ const SmallButton = styled.button`
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 700px;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #ffa07a;
 `;
 
 const ButtonWrapper = styled.div`

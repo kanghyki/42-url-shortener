@@ -116,7 +116,7 @@ function Main() {
             />
             <InputBox
               onChange={onChangeCustom}
-              placeholder="별명 짓기"
+              placeholder="Custom URL (nullable)"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') CreateURL();
               }}
