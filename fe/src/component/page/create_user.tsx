@@ -1,11 +1,54 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { ENDPOINT } from '../../config';
 import Header from '../header/header';
 
-const InputBox = styled.input``;
+const InputBox = styled.input`
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000000;
+  width: 200px;
+  margin: 10px;
+  font-size: 20px;
+  &:focus {
+    outline: none;
+  }
+`;
 
-const Button = styled.button``;
+const Button = styled.button`
+  width: 100px;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  margin: 20px;
+  &:hover {
+    background-color: gray;
+  }
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const PostWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1000px;
+  height: 150px;
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const LinkBox = styled(Link)``;
 
 function CreateUser() {
   const [id, setID] = useState('');
@@ -53,18 +96,26 @@ function CreateUser() {
   return (
     <div>
       <Header />
-      <h1>Create User</h1>
-      <InputBox onChange={onChangeID} placeholder="ID" />
-      <InputBox
-        type="password"
-        required
-        onChange={onChangePassword}
-        placeholder="PASSWORD"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') Create();
-        }}
-      />
-      <Button onClick={Create}>Create</Button>
+
+      <Wrapper>
+        <h1>Create User</h1>
+        <PostWrapper>
+          <InputWrapper>
+            <InputBox onChange={onChangeID} placeholder="ID" />
+            <InputBox
+              type="password"
+              required
+              onChange={onChangePassword}
+              placeholder="PASSWORD"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') Create();
+              }}
+            />
+          </InputWrapper>
+          <Button onClick={Create}>Create</Button>
+        </PostWrapper>
+        <LinkBox to="/login">Return to login</LinkBox>
+      </Wrapper>
     </div>
   );
 }

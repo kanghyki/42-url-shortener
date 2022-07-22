@@ -5,8 +5,32 @@ import Header from '../header/header';
 import Url from './url';
 
 const Button = styled.button`
-  font-size: 20px;
-  font-weight: bold;
+  border-radius: 5px;
+  border: none;
+  background-color: gray;
+  color: white;
+  margin: 20px;
+  font-size: 30px;
+  &:hover {
+    background-color: #4caf50;
+  }
+`;
+
+const UserContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: pink;
+  width: 1000px;
+  margin: 50px;
+  padding: 30px;
+  border-radius: 20px;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 function Mypage() {
@@ -43,7 +67,7 @@ function Mypage() {
         if (res.ok) {
           return res.json();
         } else {
-          return false;
+          document.location.href = '/login';
         }
       })
       .then((resJson) => {
@@ -66,39 +90,42 @@ function Mypage() {
         localStorage.removeItem('token');
         document.location.href = '/';
       } else {
-        return false;
+        alert('Something went wrong please re-login');
+        localStorage.removeItem('token');
+        document.location.href = '/';
       }
     });
   };
 
   const printData = () => {
     return (
-      <div>
+      <UserContainer>
         <div>userID: {data.userID}</div>
         <div>CreateAt: {data.createdAt}</div>
         <div>UpdateAt: {data.updatedAt}</div>
         <h1>URLs</h1>
-        <div>---------------------------</div>
         {data.urls.map((url, index) => (
           <div key={index}>
             <Url url={url} />
           </div>
         ))}
-      </div>
+      </UserContainer>
     );
   };
 
   return (
     <div>
       <Header />
-      <h1>My Page</h1>
-      {data.isActive === true ? (
-        <div>
-          {printData()} <Button onClick={deleteUser}>Delete Account</Button>
-        </div>
-      ) : (
-        <h1>[ Need Login ]</h1>
-      )}
+      <Wrapper>
+        <h1>My Page</h1>
+        {data.isActive ? (
+          <>
+            {printData()} <Button onClick={deleteUser}>Delete Account</Button>
+          </>
+        ) : (
+          <></>
+        )}
+      </Wrapper>
     </div>
   );
 }

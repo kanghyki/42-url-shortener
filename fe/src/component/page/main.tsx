@@ -1,11 +1,51 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { ENDPOINT } from '../../config';
+import { ENDPOINT, REDIRECT_ENDPOINT } from '../../config';
 import Header from '../header/header';
 
-const InputBox = styled.input``;
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
-const Button = styled.button``;
+const InputBox = styled.input`
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000000;
+  width: 500px;
+  margin: 10px;
+  font-size: 30px;
+  &:focus {
+    outline: none;
+  }
+`;
+
+const Button = styled.button`
+  width: 100px;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  margin: 20px;
+  &:hover {
+    background-color: gray;
+  }
+`;
+
+const PostWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1000px;
+  height: 150px;
+`;
+
+const URLWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 function Main() {
   const [ret, setRet] = useState({
@@ -63,34 +103,48 @@ function Main() {
   return (
     <div>
       <Header />
-      <h1>Create URL</h1>
-      <InputBox onChange={onChangeOrigin} placeholder="Origin URL" />
-      <InputBox
-        onChange={onChangeCustom}
-        placeholder="Custom URL(nullable)"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') CreateURL();
-        }}
-      />
-      <Button onClick={CreateURL}>Create URL</Button>
-      <div>
-        {ret.ok === true ? (
-          <div>
-            <div>Generated: localhost:3002/{ret.result.shortURL}</div>
-            <Button
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `localhost:3002/${ret.result.shortURL}`,
-                );
+      <Wrapper>
+        <h1>42 URL Shortener</h1>
+        <PostWrapper>
+          <URLWrapper>
+            <InputBox
+              onChange={onChangeOrigin}
+              placeholder="Shorten your URL"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') CreateURL();
               }}
-            >
-              Copy
-            </Button>
-          </div>
-        ) : (
-          <div />
-        )}
-      </div>
+            />
+            <InputBox
+              onChange={onChangeCustom}
+              placeholder="별명 짓기"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') CreateURL();
+              }}
+            />
+          </URLWrapper>
+          <Button onClick={CreateURL}>Shorten</Button>
+        </PostWrapper>
+        <div>
+          {ret.ok === true ? (
+            <div>
+              <div>
+                Generated: {REDIRECT_ENDPOINT}/{ret.result.shortURL}
+              </div>
+              <Button
+                onClick={(e) => {
+                  navigator.clipboard.writeText(
+                    `${REDIRECT_ENDPOINT}/${ret.result.shortURL}`,
+                  );
+                }}
+              >
+                Copy
+              </Button>
+            </div>
+          ) : (
+            <div />
+          )}
+        </div>
+      </Wrapper>
     </div>
   );
 }

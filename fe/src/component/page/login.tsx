@@ -4,9 +4,49 @@ import { Link } from 'react-router-dom';
 import Header from '../header/header';
 import { ENDPOINT } from '../../config';
 
-const InputBox = styled.input``;
+const InputBox = styled.input`
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000000;
+  width: 200px;
+  margin: 10px;
+  font-size: 20px;
+  &:focus {
+    outline: none;
+  }
+`;
 
-const Button = styled.button``;
+const Button = styled.button`
+  width: 100px;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  background-color: gray;
+  color: white;
+  margin: 20px;
+  &:hover {
+    background-color: #4caf50;
+  }
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const PostWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1000px;
+  height: 150px;
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 const LinkBox = styled(Link)``;
 
@@ -53,19 +93,25 @@ function Login() {
   return (
     <div>
       <Header />
-      <h1>Login</h1>
-      <InputBox onChange={onChangeID} placeholder="ID" />
-      <InputBox
-        type="password"
-        required
-        onChange={onChangePassword}
-        placeholder="PASSWORD"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') Login();
-        }}
-      />
-      <Button onClick={Login}>Login</Button>
-      <LinkBox to="/create">create user</LinkBox>
+      <Wrapper>
+        <h1>Login</h1>
+        <PostWrapper>
+          <InputWrapper>
+            <InputBox onChange={onChangeID} placeholder="ID" />
+            <InputBox
+              type="password"
+              required
+              onChange={onChangePassword}
+              placeholder="PASSWORD"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') Login();
+              }}
+            />
+          </InputWrapper>
+          <Button onClick={Login}>Login</Button>
+        </PostWrapper>
+        <LinkBox to="/create">create user</LinkBox>
+      </Wrapper>
     </div>
   );
 }

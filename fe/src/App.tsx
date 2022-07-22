@@ -6,10 +6,12 @@ import Mypage from './component/page/my_page';
 import NotFound from './component/page/not_found';
 import CreateUser from './component/page/create_user';
 import Wrong from './component/page/wrong';
+import GlobalStyle from './global/global_style';
 
 function App() {
   return (
-    <div>
+    <>
+      <GlobalStyle />
       <Router basename={process.env.REACT_APP_BASE_NAME}>
         <Routes>
           <Route path="/" element={<Main />} />
@@ -20,7 +22,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
-    </div>
+    </>
   );
 }
 

@@ -1,14 +1,73 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { ENDPOINT } from '../../config';
+import { ENDPOINT, REDIRECT_ENDPOINT } from '../../config';
 
-const InputBox = styled.input``;
+const InputBox = styled.input`
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000000;
+  width: 100px;
+  font-size: 15px;
+  &:focus {
+    outline: none;
+  }
+  color: #4caf50;
+`;
 
-const Button = styled.button``;
+const Button = styled.button`
+  width: 100px;
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  margin: 10px;
+  &:hover {
+    background-color: gray;
+  }
+`;
 
 const SmallButton = styled.button`
-  font-weight: bold;
+  border-radius: 5px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  margin: 3px;
+  &:hover {
+    background-color: gray;
+  }
 `;
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 700px;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+`;
+
+const URLWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  word-break: break-all;
+`;
+
+const URL = styled.div`
+  margin: 2px;
+`;
+
+const UpdateBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ModifyInput = styled.div``;
 
 interface Props {
   url: { originURL: string; shortURL: string; called: number };
@@ -26,6 +85,10 @@ function Url(props: Props) {
   };
 
   const updateURL = () => {
+    if (newURL.length <= 0) {
+      alert('Please input text in box');
+      return;
+    }
     const url = `${ENDPOINT}/url/`;
     const option = {
       method: 'PATCH',
@@ -82,37 +145,50 @@ function Url(props: Props) {
     });
   };
 
+  function updateBox() {
+    return (
+      <UpdateBox>
+        <URLWrapper>
+          <ModifyInput>
+            {REDIRECT_ENDPOINT}/
+            <InputBox
+              onChange={onChangeURL}
+              placeholder={newURL}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') updateURL();
+              }}
+            />
+          </ModifyInput>
+        </URLWrapper>
+        <Button onClick={updateURL}>Update</Button>
+      </UpdateBox>
+    );
+  }
+
   return (
-    <div>
-      <div>originURL: {props.url.originURL}</div>
-      {editMode ? (
-        <div>
-          <InputBox
-            onChange={onChangeURL}
-            placeholder={newURL}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') updateURL();
-            }}
-          />
-          <Button onClick={updateURL}>submit</Button>
-        </div>
-      ) : (
-        <div>shortURL: http://localhost:3002/{props.url.shortURL}</div>
-      )}
-      <div>Called: {props.url.called}</div>
-      <SmallButton onClick={changeEditClick}>Edit</SmallButton>
-      <SmallButton onClick={() => deleteURL(props.url.shortURL)}>
-        Delete
-      </SmallButton>
-      <SmallButton
-        onClick={() => {
-          navigator.clipboard.writeText(`localhost:3002/${props.url.shortURL}`);
-        }}
-      >
-        Copy
-      </SmallButton>
-      <div>---------------------------</div>
-    </div>
+    <Wrapper>
+      <URLWrapper>
+        <URL>Called: {props.url.called}</URL>
+        <URL>Redirect to - {props.url.originURL}</URL>
+        <URL>
+          ShortURL - {REDIRECT_ENDPOINT}/{props.url.shortURL}
+        </URL>
+        {editMode ? updateBox() : <></>}
+      </URLWrapper>
+      <ButtonWrapper>
+        <SmallButton onClick={changeEditClick}>Edit</SmallButton>
+        <SmallButton onClick={() => deleteURL(props.url.shortURL)}>
+          Delete
+        </SmallButton>
+        <SmallButton
+          onClick={() => {
+            navigator.clipboard.writeText(`${ENDPOINT}/${props.url.shortURL}`);
+          }}
+        >
+          Copy
+        </SmallButton>
+      </ButtonWrapper>
+    </Wrapper>
   );
 }
 
