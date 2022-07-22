@@ -74,7 +74,18 @@ function Main() {
       <Button onClick={CreateURL}>Create URL</Button>
       <div>
         {ret.ok === true ? (
-          <div>Generate: localhost:3002/{ret.result.shortURL}</div>
+          <div>
+            <div>Generated: localhost:3002/{ret.result.shortURL}</div>
+            <Button
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `localhost:3002/${ret.result.shortURL}`,
+                );
+              }}
+            >
+              Copy
+            </Button>
+          </div>
         ) : (
           <div />
         )}
