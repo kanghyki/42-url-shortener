@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { ENDPOINT } from '../../config';
 import Header from '../header/header';
 import Url from './url';
 
@@ -28,7 +29,7 @@ function Mypage() {
   }, []);
 
   function getMyData() {
-    const url = 'http://localhost:3001/user/';
+    const url = `${ENDPOINT}/user/`;
     const option = {
       method: 'GET',
       headers: {
@@ -36,6 +37,7 @@ function Mypage() {
         Authorization: `bearer ${localStorage.getItem('token')}`,
       },
     };
+    console.log(url);
     fetch(url, option)
       .then((res) => {
         if (res.ok) {
@@ -50,7 +52,7 @@ function Mypage() {
   }
 
   const deleteUser = () => {
-    const url = 'http://localhost:3001/user/';
+    const url = `${ENDPOINT}/user/`;
     const option = {
       method: 'DELETE',
       headers: {

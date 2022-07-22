@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { ENDPOINT } from '../../config';
 import Header from '../header/header';
 
 const InputBox = styled.input``;
@@ -18,7 +19,7 @@ function CreateUser() {
   };
 
   const Create = () => {
-    const url = 'http://localhost:3001/user/';
+    const url = `${ENDPOINT}/user/`;
     const option = {
       method: 'POST',
       headers: {

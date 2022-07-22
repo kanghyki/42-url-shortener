@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { ENDPOINT } from '../../config';
 import Header from '../header/header';
 
 const InputBox = styled.input``;
@@ -26,7 +27,7 @@ function Main() {
   };
 
   const CreateURL = () => {
-    const url = 'http://localhost:3001/url';
+    const url = `${ENDPOINT}/url/`;
     const option = {
       method: 'POST',
       headers: {

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { ENDPOINT } from '../../config';
 
 const InputBox = styled.input``;
 
@@ -25,7 +26,7 @@ function Url(props: Props) {
   };
 
   const updateURL = () => {
-    const url = 'http://localhost:3001/url';
+    const url = `${ENDPOINT}/url/`;
     const option = {
       method: 'PATCH',
       headers: {
@@ -54,7 +55,7 @@ function Url(props: Props) {
   };
 
   const deleteURL = (deleteURL: string) => {
-    const url = 'http://localhost:3001/url/';
+    const url = `${ENDPOINT}/url/`;
     const option = {
       method: 'DELETE',
       headers: {
@@ -86,7 +87,13 @@ function Url(props: Props) {
       <div>originURL: {props.url.originURL}</div>
       {editMode ? (
         <div>
-          <InputBox onChange={onChangeURL} placeholder={newURL} />
+          <InputBox
+            onChange={onChangeURL}
+            placeholder={newURL}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') updateURL();
+            }}
+          />
           <Button onClick={updateURL}>submit</Button>
         </div>
       ) : (
@@ -96,6 +103,13 @@ function Url(props: Props) {
       <SmallButton onClick={changeEditClick}>Edit</SmallButton>
       <SmallButton onClick={() => deleteURL(props.url.shortURL)}>
         Delete
+      </SmallButton>
+      <SmallButton
+        onClick={() => {
+          navigator.clipboard.writeText(`localhost:3002/${props.url.shortURL}`);
+        }}
+      >
+        Copy
       </SmallButton>
       <div>---------------------------</div>
     </div>

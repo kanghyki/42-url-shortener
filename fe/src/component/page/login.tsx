@@ -2,6 +2,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import Header from '../header/header';
+import { ENDPOINT } from '../../config';
 
 const InputBox = styled.input``;
 
@@ -20,7 +21,7 @@ function Login() {
     setPassword(e.target.value);
   };
 
-  const url = 'http://localhost:3001/auth/login';
+  const url = `${ENDPOINT}/auth/login/`;
   const option = {
     method: 'POST',
     headers: {

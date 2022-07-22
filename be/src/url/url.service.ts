@@ -6,7 +6,7 @@ import { URL } from './url.entity';
 import { User } from 'src/user/user.entity';
 import * as bcrypt from 'bcrypt';
 import { HttpService } from '@nestjs/axios';
-//import * as base62 from 'base62-ts';
+import * as base62 from 'base62-ts';
 
 @Injectable()
 export class URLService {
@@ -47,10 +47,17 @@ export class URLService {
 
   async encodeURL(originURL: string): Promise<string> {
     const url_hash = await bcrypt.hash(originURL, 10);
-    //const url_62_num = base62.decode(url_hash);
-    //const url_62_str = base62.encode(url_62_num);
+    const url_62_num = base62.decode(url_hash);
     return url_hash;
   }
+
+  //async checkHealthServer(url: string) {
+  //  if (await this.httpService.axiosRef.get(url)) return true;
+  //  if (await this.httpService.axiosRef.get(`http://${url}`)) return true;
+  //  if (await this.httpService.axiosRef.get(`https://${url}`)) return true;
+  //  if (await this.httpService.axiosRef.get(`https://www.${url}`)) return true;
+  //  return false;
+  //}
 
   async createURL(userID: string, body: CreateURLDto): Promise<object> {
     try {
@@ -72,6 +79,32 @@ export class URLService {
     const user = await this.userRepository.findOneBy({ userID: userID });
     const newURL = this.urlRepository.create(body);
     newURL.user = user;
+    newURL.called = 0;
+    const ret = await this.urlRepository.save(newURL);
+
+    ret.id = undefined;
+    ret.user = undefined;
+    return { ok: true, result: ret };
+  }
+
+  async createAnomymousURL(body: CreateURLDto): Promise<object> {
+    try {
+      await this.httpService.axiosRef.get(body.originURL);
+    } catch (e) {
+      return { ok: false, msg: 'Unhealth Origin URL Server' };
+    }
+    if (body.shortURL.length <= 0) {
+      body.shortURL = await this.encodeURL(body.originURL);
+    }
+    if (
+      (await this.urlRepository.findOneBy({
+        shortURL: body.shortURL,
+      })) !== null
+    ) {
+      return { ok: false, msg: 'Duplicated URL' };
+    }
+
+    const newURL = this.urlRepository.create(body);
     newURL.called = 0;
     const ret = await this.urlRepository.save(newURL);
 
