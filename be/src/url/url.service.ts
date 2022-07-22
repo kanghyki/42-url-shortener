@@ -47,7 +47,7 @@ export class URLService {
 
   async encodeURL(originURL: string): Promise<string> {
     const url_hash = await bcrypt.hash(originURL, 10);
-    const url_62_num = base62.decode(url_hash);
+    //const url_62_num = base62.decode(url_hash);
     return url_hash;
   }
 
@@ -60,11 +60,11 @@ export class URLService {
   //}
 
   async createURL(userID: string, body: CreateURLDto): Promise<object> {
-    try {
-      await this.httpService.axiosRef.get(body.originURL);
-    } catch (e) {
-      return { ok: false, msg: 'Unhealth Origin URL Server' };
-    }
+    //try {
+    //  await this.httpService.axiosRef.get(body.originURL);
+    //} catch (e) {
+    //  return { ok: false, msg: 'Unhealth Origin URL Server' };
+    //}
     if (body.shortURL.length <= 0) {
       body.shortURL = await this.encodeURL(body.originURL);
     }

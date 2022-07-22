@@ -25,7 +25,7 @@ export class URLController {
     const JwtUserID = await this.authService.getJwtUserID(
       req.headers.authorization,
     );
-    if (body.originURL === undefined || body.shortURL === undefined) {
+    if (body.originURL === undefined) {
       return { ok: false, msg: 'Wrong Query' };
     }
 
