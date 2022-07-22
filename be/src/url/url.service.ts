@@ -60,11 +60,11 @@ export class URLService {
   //}
 
   async createURL(userID: string, body: CreateURLDto): Promise<object> {
-    //try {
-    //  await this.httpService.axiosRef.get(body.originURL);
-    //} catch (e) {
-    //  return { ok: false, msg: 'Unhealth Origin URL Server' };
-    //}
+    try {
+      await this.httpService.axiosRef.get(body.originURL);
+    } catch (e) {
+      return { ok: false, msg: 'Unhealth Origin URL Server' };
+    }
     if (body.shortURL.length <= 0) {
       body.shortURL = await this.encodeURL(body.originURL);
     }
