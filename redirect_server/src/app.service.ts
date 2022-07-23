@@ -8,10 +8,11 @@ import { URL } from './entity/url.entity';
 export class AppService {
   constructor(@InjectRepository(URL) private urlRepository: Repository<URL>) {}
 
+  redirectToMain(res: Response) {
+    res.redirect(HttpStatus.TEMPORARY_REDIRECT, process.env.REDIRECT_TO_MAIN);
+  }
+
   async redirectURL(redirURL: string, res: Response) {
-    if (redirURL === undefined) {
-      res.redirect(HttpStatus.TEMPORARY_REDIRECT, process.env.REDIRECT_TO_MAIN);
-    }
     const url = await this.urlRepository.findOneBy({ shortURL: redirURL });
     if (url !== null) {
       console.log(`This url {${url.shortURL}} has been called`);

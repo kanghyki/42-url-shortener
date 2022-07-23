@@ -22,10 +22,10 @@ export class UserService {
     req.password = hashPW;
     const newUser = this.userRepository.create(req);
     await this.userRepository.save(newUser);
-    return { ok: true, msg: 'Created' };
+    return { ok: true, msg: 'Create User' };
   }
 
-  async getUser(id: string): Promise<User[]> {
+  async getUser(id: string) {
     const find = await this.userRepository.find({
       relations: {
         urls: true,
@@ -40,11 +40,17 @@ export class UserService {
       user.password = undefined;
       user.urls.map((url) => (url.id = undefined));
     });
-    return find;
+    if (find.length > 0) {
+      return { ok: true, msg: 'Get User', result: find };
+    }
+    return { ok: false, msg: 'Failed Get User' };
   }
 
   async deleteUser(userID: string) {
     const ret = await this.userRepository.delete({ userID: userID });
-    return { ok: true, msg: 'Deleted', result: ret };
+    if (ret.affected > 0) {
+      return { ok: true, msg: 'Delete User' };
+    }
+    return { ok: false, msg: 'Failed Delete User' };
   }
 }

@@ -50,10 +50,14 @@ const InputWrapper = styled.div`
 
 const LinkBox = styled(Link)``;
 
+interface resBody {
+  ok: boolean;
+  msg: string;
+}
+
 function CreateUser() {
   const [id, setID] = useState('');
   const [password, setPassword] = useState('');
-
   const onChangeID = (e: any) => {
     setID(e.target.value);
   };
@@ -61,7 +65,11 @@ function CreateUser() {
     setPassword(e.target.value);
   };
 
-  const Create = () => {
+  const Create = async () => {
+    if (id.length <= 0 || password.length <= 0) {
+      alert('Please input text in box');
+      return;
+    }
     const url = `${ENDPOINT}/user/`;
     const option = {
       method: 'POST',
@@ -73,30 +81,25 @@ function CreateUser() {
         password: password,
       }),
     };
-    if (id.length <= 0 || password.length <= 0) {
-      alert('Please input text in box');
+    const res = await fetch(url, option);
+    if (!res.ok) {
+      alert('Create Failed');
       return;
     }
-    fetch(url, option).then((res) => {
-      if (res.ok) {
-        res.json().then((resJson) => {
-          if (resJson.ok === true) {
-            alert('Created');
-          } else {
-            alert(resJson.msg);
-          }
-        });
-      } else {
-        alert('Create Failed');
-      }
-    });
+    const json = await res.json();
+    const body: resBody = json;
+    if (!body.ok) {
+      alert(body.msg);
+      document.location.href = '/login';
+      return;
+    }
+    alert('Created');
     document.location.href = '/login';
   };
 
   return (
     <div>
       <Header />
-
       <Wrapper>
         <h1>Create User</h1>
         <PostWrapper>

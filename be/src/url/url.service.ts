@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
 import { URL } from './url.entity';
 import { User } from 'src/user/user.entity';
-import * as bcrypt from 'bcrypt';
 import { HttpService } from '@nestjs/axios';
+import * as bcrypt from 'bcrypt';
 import * as base62 from 'base62-ts';
 
 @Injectable()
@@ -46,18 +46,17 @@ export class URLService {
   }
 
   async encodeURL(originURL: string): Promise<string> {
-    const url_hash = await bcrypt.hash(originURL, 10);
-    //const url_62_num = base62.decode(url_hash);
-    return url_hash;
+    const hash = await bcrypt.hash(originURL, 10);
+    let sum;
+    for (let i = 0; hash[i]; i++) {
+      if (sum === undefined) {
+        sum = hash[i].charCodeAt(0);
+      }
+      sum += hash[i].charCodeAt(0);
+    }
+    const encoded = base62.encode(parseInt(sum));
+    return encoded;
   }
-
-  //async checkHealthServer(url: string) {
-  //  if (await this.httpService.axiosRef.get(url)) return true;
-  //  if (await this.httpService.axiosRef.get(`http://${url}`)) return true;
-  //  if (await this.httpService.axiosRef.get(`https://${url}`)) return true;
-  //  if (await this.httpService.axiosRef.get(`https://www.${url}`)) return true;
-  //  return false;
-  //}
 
   async createURL(userID: string, body: CreateURLDto): Promise<object> {
     try {
@@ -65,52 +64,30 @@ export class URLService {
     } catch (e) {
       return { ok: false, msg: 'Unhealth Origin URL Server' };
     }
-    if (body.shortURL.length <= 0) {
-      body.shortURL = await this.encodeURL(body.originURL);
-    }
-    if (
+    let shortenURL = await this.encodeURL(body.originURL);
+    let count = 0;
+    while (
       (await this.urlRepository.findOneBy({
-        shortURL: body.shortURL,
+        shortURL: shortenURL,
       })) !== null
     ) {
-      return { ok: false, msg: 'Duplicated URL' };
+      if (count > 10) {
+        return { ok: false, msg: 'Calculate Error Retry' };
+      }
+      shortenURL = await this.encodeURL(body.originURL);
+      count += 1;
     }
 
     const user = await this.userRepository.findOneBy({ userID: userID });
     const newURL = this.urlRepository.create(body);
+    newURL.shortURL = shortenURL;
     newURL.user = user;
     newURL.called = 0;
     const ret = await this.urlRepository.save(newURL);
 
     ret.id = undefined;
     ret.user = undefined;
-    return { ok: true, result: ret };
-  }
-
-  async createAnomymousURL(body: CreateURLDto): Promise<object> {
-    try {
-      await this.httpService.axiosRef.get(body.originURL);
-    } catch (e) {
-      return { ok: false, msg: 'Unhealth Origin URL Server' };
-    }
-    if (body.shortURL.length <= 0) {
-      body.shortURL = await this.encodeURL(body.originURL);
-    }
-    if (
-      (await this.urlRepository.findOneBy({
-        shortURL: body.shortURL,
-      })) !== null
-    ) {
-      return { ok: false, msg: 'Duplicated URL' };
-    }
-
-    const newURL = this.urlRepository.create(body);
-    newURL.called = 0;
-    const ret = await this.urlRepository.save(newURL);
-
-    ret.id = undefined;
-    ret.user = undefined;
-    return { ok: true, result: ret };
+    return { ok: true, msg: 'Create URL', result: ret };
   }
 
   async deleteURL(userID: string, body: DeleteURLDto) {
@@ -119,12 +96,20 @@ export class URLService {
     }
 
     const ret = await this.urlRepository.delete({ shortURL: body.shortURL });
-    return { ok: true, result: ret };
+    if (ret.affected > 0) {
+      return { ok: true, msg: 'Delete URL' };
+    }
+    return { ok: false, msg: 'Failed Delete URL' };
   }
 
   async updateURL(userID: string, body: UpdateURLDto) {
     if ((await this.comfirmURLOwnership(userID, body.shortURL)) === false) {
       return { ok: false, msg: 'You have not Ownership' };
+    }
+    if (
+      (await this.urlRepository.findOneBy({ shortURL: body.newURL })) !== null
+    ) {
+      return { ok: false, msg: 'Duplicated URL' };
     }
 
     const findURL = await this.urlRepository.findOneBy({
@@ -135,6 +120,6 @@ export class URLService {
     const ret = await this.urlRepository.save(findURL);
 
     ret.id = undefined;
-    return { ok: true, result: ret };
+    return { ok: true, msg: 'Update URL' };
   }
 }

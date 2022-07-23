@@ -46,7 +46,6 @@ const Wrapper = styled.div`
   margin: 10px;
   padding: 10px;
   border-radius: 10px;
-  background-color: #ffa07a;
 `;
 
 const ButtonWrapper = styled.div`
@@ -74,22 +73,27 @@ const UpdateBox = styled.div`
 
 const ModifyInput = styled.div``;
 
+interface resBody {
+  ok: boolean;
+  msg: string;
+  result: any;
+}
+
 interface Props {
   url: { originURL: string; shortURL: string; called: number };
 }
+
 function Url(props: Props) {
   const [newURL, setNewURL] = useState(props.url.shortURL);
   const [editMode, setEditMode] = useState(false);
-
   const changeEditClick = () => {
     setEditMode(!editMode);
   };
-
   const onChangeURL = (e: any) => {
     setNewURL(e.target.value);
   };
 
-  const updateURL = () => {
+  const updateURL = async () => {
     if (newURL.length <= 0) {
       alert('Please input text in box');
       return;
@@ -106,23 +110,22 @@ function Url(props: Props) {
         newURL: newURL,
       }),
     };
-    fetch(url, option).then((res) => {
-      if (res.ok) {
-        res.json().then((resJson) => {
-          if (resJson.ok === true) {
-            alert(`Update URL ${newURL}`);
-            document.location.href = '/mypage';
-          } else {
-            alert(resJson.msg);
-          }
-        });
-      } else {
-        alert('Please Check Login');
-      }
-    });
+    const res = await fetch(url, option);
+    if (!res.ok) {
+      alert('Check Login');
+      return;
+    }
+    const json = await res.json();
+    const body: resBody = json;
+    if (!body.ok) {
+      alert(body.msg);
+      return;
+    }
+    alert(`Update URL ${newURL}`);
+    window.location.reload();
   };
 
-  const deleteURL = (deleteURL: string) => {
+  const deleteURL = async (deleteURL: string) => {
     const url = `${ENDPOINT}/url/`;
     const option = {
       method: 'DELETE',
@@ -134,20 +137,19 @@ function Url(props: Props) {
         shortURL: `${deleteURL}`,
       }),
     };
-    fetch(url, option).then((res) => {
-      if (res.ok) {
-        res.json().then((resJson) => {
-          if (resJson.ok === true) {
-            alert(`Delete URL ${deleteURL}`);
-            document.location.href = '/mypage';
-          } else {
-            alert(resJson.msg);
-          }
-        });
-      } else {
-        alert('Please Check Login');
-      }
-    });
+    const res = await fetch(url, option);
+    if (!res.ok) {
+      alert('Check Login');
+      return;
+    }
+    const json = await res.json();
+    const body: resBody = json;
+    if (!body.ok) {
+      alert(body.msg);
+      return;
+    }
+    alert(`Delete URL ${deleteURL}`);
+    window.location.reload();
   };
 
   function updateBox() {
@@ -187,7 +189,9 @@ function Url(props: Props) {
         </SmallButton>
         <SmallButton
           onClick={() => {
-            navigator.clipboard.writeText(`${ENDPOINT}/${props.url.shortURL}`);
+            navigator.clipboard.writeText(
+              `${REDIRECT_ENDPOINT}/${props.url.shortURL}`,
+            );
           }}
         >
           Copy

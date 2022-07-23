@@ -31,7 +31,7 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({ userID: userID });
     user.token = token;
     await this.userRepository.save(user);
-    return { access_token: token };
+    return { ok: true, access_token: token };
   }
 
   async validateJwtToken(token: string) {

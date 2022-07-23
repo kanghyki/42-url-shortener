@@ -20,11 +20,10 @@ const UserContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: pink;
-  width: 1000px;
+  width: 100%;
   margin: 50px;
   padding: 30px;
-  border-radius: 20px;
+  border-radius: 0px;
 `;
 
 const Wrapper = styled.div`
@@ -32,6 +31,12 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
 `;
+
+interface resBody {
+  ok: boolean;
+  msg: string;
+  result: any;
+}
 
 function Mypage() {
   const [data, setData] = useState({
@@ -52,7 +57,7 @@ function Mypage() {
     getMyData();
   }, []);
 
-  function getMyData() {
+  const getMyData = async () => {
     const url = `${ENDPOINT}/user/`;
     const option = {
       method: 'GET',
@@ -61,21 +66,21 @@ function Mypage() {
         Authorization: `bearer ${localStorage.getItem('token')}`,
       },
     };
-    console.log(url);
-    fetch(url, option)
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          document.location.href = '/login';
-        }
-      })
-      .then((resJson) => {
-        setData(resJson.pop());
-      });
-  }
+    const res = await fetch(url, option);
+    if (!res.ok) {
+      document.location.href = '/login';
+      return;
+    }
+    const json = await res.json();
+    const body: resBody = json;
+    if (!body.ok) {
+      alert(body.msg);
+      return;
+    }
+    setData(body.result.pop());
+  };
 
-  const deleteUser = () => {
+  const deleteUser = async () => {
     const url = `${ENDPOINT}/user/`;
     const option = {
       method: 'DELETE',
@@ -84,17 +89,24 @@ function Mypage() {
         Authorization: `bearer ${localStorage.getItem('token')}`,
       },
     };
-    fetch(url, option).then((res) => {
-      if (res.ok) {
-        alert('Delete Account Thank you');
-        localStorage.removeItem('token');
-        document.location.href = '/';
-      } else {
-        alert('Something went wrong please re-login');
-        localStorage.removeItem('token');
-        document.location.href = '/';
-      }
-    });
+    const res = await fetch(url, option);
+    if (!res.ok) {
+      alert('Something went wrong. Logout');
+      localStorage.removeItem('token');
+      document.location.href = '/';
+      return;
+    }
+    const json = await res.json();
+    const body: resBody = json;
+    if (!body.ok) {
+      alert(body.msg);
+      localStorage.removeItem('token');
+      document.location.href = '/';
+      return;
+    }
+    alert('Delete Account');
+    localStorage.removeItem('token');
+    document.location.href = '/';
   };
 
   const printData = () => {

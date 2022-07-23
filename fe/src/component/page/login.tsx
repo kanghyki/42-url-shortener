@@ -50,10 +50,15 @@ const InputWrapper = styled.div`
 
 const LinkBox = styled(Link)``;
 
+interface resBody {
+  ok: boolean;
+  msg: string;
+  access_token: string;
+}
+
 function Login() {
   const [id, setID] = useState('');
   const [password, setPassword] = useState('');
-
   const onChangeID = (e: any) => {
     setID(e.target.value);
   };
@@ -61,35 +66,41 @@ function Login() {
     setPassword(e.target.value);
   };
 
-  const url = `${ENDPOINT}/auth/login/`;
-  const option = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      userID: id,
-      password: password,
-    }),
-  };
-  const Login = () => {
+  const Login = async () => {
     if (id.length <= 0 || password.length <= 0) {
       alert('Please input text in box');
       return;
     }
-    fetch(url, option).then((res) => {
-      if (res.ok) {
-        res
-          .json()
-          .then((res) => localStorage.setItem('token', res.access_token));
-        alert('Login Success');
-        document.location.href = '/';
-      } else {
-        alert('Login failed');
-        document.location.href = '/login';
-      }
-    });
+    const url = `${ENDPOINT}/auth/login/`;
+    const option = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userID: id,
+        password: password,
+      }),
+    };
+
+    const res = await fetch(url, option);
+    if (!res.ok) {
+      alert('Login failed');
+      return;
+    }
+    const json = await res.json();
+    const body: resBody = json;
+    console.log(body);
+    if (!body.ok) {
+      alert(body.msg);
+      //document.location.href = '/';
+      return;
+    }
+    localStorage.setItem('token', body.access_token);
+    console.log(localStorage.getItem('token'));
+    document.location.href = '/';
   };
+
   return (
     <div>
       <Header />

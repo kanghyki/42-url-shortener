@@ -32,7 +32,7 @@ export class UserController {
   @Post()
   async createNewUser(@Body() body: CreateUserDto) {
     if (body.userID === undefined || body.password === undefined) {
-      return { ok: false, msg: 'Wrong Query' };
+      return { ok: false, msg: 'Request Failed' };
     }
 
     return await this.userService.createNewUser(body);

@@ -56,8 +56,8 @@ const SubTitle = styled.div`
 `;
 
 const Button = styled.button`
-  width: 100px;
-  height: 50px;
+  width: 80px;
+  height: 30px;
   border-radius: 5px;
   border: none;
   background-color: #4caf50;
@@ -79,7 +79,6 @@ function Header() {
   }, []);
 
   const deleteToken = () => {
-    alert('Logout');
     localStorage.removeItem('token');
     document.location.href = '/';
   };

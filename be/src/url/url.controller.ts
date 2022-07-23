@@ -26,7 +26,7 @@ export class URLController {
       req.headers.authorization,
     );
     if (body.originURL === undefined) {
-      return { ok: false, msg: 'Wrong Query' };
+      return { ok: false, msg: 'Request Failed' };
     }
 
     return this.urlService.createURL(JwtUserID, body);
@@ -39,7 +39,7 @@ export class URLController {
       req.headers.authorization,
     );
     if (body.shortURL === undefined) {
-      return { ok: false, msg: 'Wrong Query' };
+      return { ok: false, msg: 'Request Failed' };
     }
 
     return this.urlService.deleteURL(JwtUserID, body);
@@ -52,7 +52,7 @@ export class URLController {
       req.headers.authorization,
     );
     if (body.newURL === undefined || body.shortURL === undefined) {
-      return { ok: false, msg: 'Wrong Query' };
+      return { ok: false, msg: 'Request Failed' };
     }
 
     return this.urlService.updateURL(JwtUserID, body);

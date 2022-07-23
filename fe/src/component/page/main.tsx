@@ -47,8 +47,15 @@ const URLWrapper = styled.div`
   flex-direction: column;
 `;
 
+interface resBody {
+  ok: boolean;
+  msg: string;
+  result: any;
+}
+
 function Main() {
-  const [ret, setRet] = useState({
+  const [origin, setOrigin] = useState('');
+  const [body, setBody] = useState({
     ok: false,
     result: {
       originURL: '',
@@ -56,17 +63,15 @@ function Main() {
       called: 0,
     },
   });
-  const [origin, setOrigin] = useState('');
-  const [custom, setCustom] = useState('');
-
   const onChangeOrigin = (e: any) => {
     setOrigin(e.target.value);
   };
-  const onChangeCustom = (e: any) => {
-    setCustom(e.target.value);
-  };
 
-  const CreateURL = () => {
+  const CreateURL = async () => {
+    if (origin.length <= 0) {
+      alert('Please input text in box');
+      return;
+    }
     const url = `${ENDPOINT}/url/`;
     const option = {
       method: 'POST',
@@ -76,28 +81,41 @@ function Main() {
       },
       body: JSON.stringify({
         originURL: origin,
-        shortURL: custom,
       }),
     };
-    if (origin.length <= 0) {
-      alert('Please input text in box');
+    const res = await fetch(url, option);
+    if (!res.ok) {
+      alert('Check Login');
+      document.location.href = '/login';
       return;
     }
-    fetch(url, option).then((res) => {
-      if (res.ok) {
-        res.json().then((resJson) => {
-          if (resJson.ok === true) {
-            alert('Create URL');
-            setRet(resJson);
-          } else {
-            alert('Wrong URL');
-          }
-        });
-      } else {
-        alert('Please Login');
-        document.location.href = '/login';
-      }
-    });
+    const json = await res.json();
+    const body: resBody = json;
+    if (!body.ok) {
+      alert(body.msg);
+      return;
+    }
+    alert('Create URL');
+    setBody(body);
+  };
+
+  const isBodyOK = () => {
+    return (
+      <PostWrapper>
+        <div>
+          Generated: {REDIRECT_ENDPOINT}/{body.result.shortURL}
+        </div>
+        <Button
+          onClick={(e) => {
+            navigator.clipboard.writeText(
+              `${REDIRECT_ENDPOINT}/${body.result.shortURL}`,
+            );
+          }}
+        >
+          Copy
+        </Button>
+      </PostWrapper>
+    );
   };
 
   return (
@@ -114,36 +132,10 @@ function Main() {
                 if (e.key === 'Enter') CreateURL();
               }}
             />
-            <InputBox
-              onChange={onChangeCustom}
-              placeholder="Custom URL (nullable)"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') CreateURL();
-              }}
-            />
           </URLWrapper>
           <Button onClick={CreateURL}>Shorten</Button>
         </PostWrapper>
-        <div>
-          {ret.ok === true ? (
-            <div>
-              <div>
-                Generated: {REDIRECT_ENDPOINT}/{ret.result.shortURL}
-              </div>
-              <Button
-                onClick={(e) => {
-                  navigator.clipboard.writeText(
-                    `${REDIRECT_ENDPOINT}/${ret.result.shortURL}`,
-                  );
-                }}
-              >
-                Copy
-              </Button>
-            </div>
-          ) : (
-            <div />
-          )}
-        </div>
+        <div>{body.ok === true ? isBodyOK() : <></>}</div>
       </Wrapper>
     </div>
   );

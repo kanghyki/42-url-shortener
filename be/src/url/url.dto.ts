@@ -1,6 +1,5 @@
 export interface CreateURLDto {
   originURL: string;
-  shortURL: string;
 }
 
 export interface DeleteURLDto {

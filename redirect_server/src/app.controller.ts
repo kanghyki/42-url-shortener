@@ -6,8 +6,15 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Get()
+  redirectToMain(@Res() res: Response) {
+    console.log('main');
+    return this.appService.redirectToMain(res);
+  }
+
   @Get(':url')
   async redirectURL(@Param('url') url: string, @Res() res: Response) {
+    console.log('url');
     return await this.appService.redirectURL(url, res);
   }
 }
