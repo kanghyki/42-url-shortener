@@ -7,7 +7,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
 import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
 import { URLService } from './url.service';
@@ -19,42 +19,33 @@ export class URLController {
     private readonly authService: AuthService,
   ) {}
 
-  @UseGuards(JwtGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async createURL(@Req() req: any, @Body() body: CreateURLDto) {
-    const JwtUserID = await this.authService.getJwtUserID(
-      req.headers.authorization,
-    );
     if (body.originURL === undefined) {
       return { ok: false, msg: 'Request Failed' };
     }
 
-    return this.urlService.createURL(JwtUserID, body);
+    return this.urlService.createURL(req.user.uesrID, body);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Delete()
   async deleteURL(@Req() req: any, @Body() body: DeleteURLDto) {
-    const JwtUserID = await this.authService.getJwtUserID(
-      req.headers.authorization,
-    );
     if (body.shortURL === undefined) {
       return { ok: false, msg: 'Request Failed' };
     }
 
-    return this.urlService.deleteURL(JwtUserID, body);
+    return this.urlService.deleteURL(req.user.userID, body);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Patch()
   async UpdataURL(@Req() req: any, @Body() body: UpdateURLDto) {
-    const JwtUserID = await this.authService.getJwtUserID(
-      req.headers.authorization,
-    );
     if (body.newURL === undefined || body.shortURL === undefined) {
       return { ok: false, msg: 'Request Failed' };
     }
 
-    return this.urlService.updateURL(JwtUserID, body);
+    return this.urlService.updateURL(req.user.userID, body);
   }
 }

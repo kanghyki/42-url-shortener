@@ -7,26 +7,18 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/auth.guard';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDto } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('/user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
-  @UseGuards(JwtGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async findUser(@Req() req: any) {
-    const JwtUserID = await this.authService.getJwtUserID(
-      req.headers.authorization,
-    );
-
-    return this.userService.getUser(JwtUserID);
+    return this.userService.getUser(req.user.userID);
   }
 
   @Post()
@@ -38,13 +30,9 @@ export class UserController {
     return await this.userService.createNewUser(body);
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Delete()
   async deleteUser(@Req() req: any) {
-    const JwtUserID = await this.authService.getJwtUserID(
-      req.headers.authorization,
-    );
-
-    return this.userService.deleteUser(JwtUserID);
+    return this.userService.deleteUser(req.user.userID);
   }
 }
