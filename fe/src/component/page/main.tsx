@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import { ENDPOINT, REDIRECT_ENDPOINT } from '../../config';
 import Header from '../header/header';
 
-const Wrapper = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-const InputBox = styled.input`
+const Input = styled.input`
   background: transparent;
   border: none;
   border-bottom: 1px solid #000000;
@@ -31,10 +31,11 @@ const Button = styled.button`
   margin: 20px;
   &:hover {
     background-color: gray;
+    transition: background-color 0.3s;
   }
 `;
 
-const PostWrapper = styled.div`
+const GeneratorContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -42,7 +43,7 @@ const PostWrapper = styled.div`
   height: 150px;
 `;
 
-const URLWrapper = styled.div`
+const URLContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
@@ -53,8 +54,50 @@ interface resBody {
   result: any;
 }
 
+const falseObject: resBody = {
+  ok: false,
+  msg: '',
+  result: {
+    originURL: '',
+    shortURL: '',
+    called: 0,
+  },
+};
+
+const CreateURL = async (originURL: string): Promise<resBody> => {
+  if (originURL.length <= 0) {
+    alert('Please input text in box');
+    return falseObject;
+  }
+  const url = `${ENDPOINT}/url/`;
+  const option = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `bearer ${localStorage.getItem('token')}`,
+    },
+    body: JSON.stringify({
+      originURL: originURL,
+    }),
+  };
+  const res = await fetch(url, option);
+  if (!res.ok) {
+    alert('Check Login');
+    document.location.href = '/login';
+    return falseObject;
+  }
+  const json = await res.json();
+  const body: resBody = json;
+  if (!body.ok) {
+    alert(body.msg);
+    return falseObject;
+  }
+  alert('Create URL');
+  return body;
+};
+
 function Main() {
-  const [origin, setOrigin] = useState('');
+  const [originURL, setOriginURL] = useState('');
   const [body, setBody] = useState({
     ok: false,
     result: {
@@ -63,45 +106,13 @@ function Main() {
       called: 0,
     },
   });
-  const onChangeOrigin = (e: any) => {
-    setOrigin(e.target.value);
+  const onChangeOriginURL = (e: any) => {
+    setOriginURL(e.target.value);
   };
 
-  const CreateURL = async () => {
-    if (origin.length <= 0) {
-      alert('Please input text in box');
-      return;
-    }
-    const url = `${ENDPOINT}/url/`;
-    const option = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify({
-        originURL: origin,
-      }),
-    };
-    const res = await fetch(url, option);
-    if (!res.ok) {
-      alert('Check Login');
-      document.location.href = '/login';
-      return;
-    }
-    const json = await res.json();
-    const body: resBody = json;
-    if (!body.ok) {
-      alert(body.msg);
-      return;
-    }
-    alert('Create URL');
-    setBody(body);
-  };
-
-  const isBodyOK = () => {
+  const MakeCreatedURLContainer = () => {
     return (
-      <PostWrapper>
+      <GeneratorContainer>
         <div>
           Generated: {REDIRECT_ENDPOINT}/{body.result.shortURL}
         </div>
@@ -114,29 +125,39 @@ function Main() {
         >
           Copy
         </Button>
-      </PostWrapper>
+      </GeneratorContainer>
     );
   };
 
   return (
     <div>
       <Header />
-      <Wrapper>
+      <Container>
         <h1>42 URL Shortener</h1>
-        <PostWrapper>
-          <URLWrapper>
-            <InputBox
-              onChange={onChangeOrigin}
+        <GeneratorContainer>
+          <URLContainer>
+            <Input
+              onChange={onChangeOriginURL}
               placeholder="Shorten your URL"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') CreateURL();
+              onKeyDown={async (e) => {
+                if (e.key === 'Enter') {
+                  const ret = await CreateURL(originURL);
+                  setBody(ret);
+                }
               }}
             />
-          </URLWrapper>
-          <Button onClick={CreateURL}>Shorten</Button>
-        </PostWrapper>
-        <div>{body.ok === true ? isBodyOK() : <></>}</div>
-      </Wrapper>
+          </URLContainer>
+          <Button
+            onClick={async () => {
+              const ret = await CreateURL(originURL);
+              setBody(ret);
+            }}
+          >
+            Shorten
+          </Button>
+        </GeneratorContainer>
+        <div>{body.ok === true ? MakeCreatedURLContainer() : <></>}</div>
+      </Container>
     </div>
   );
 }

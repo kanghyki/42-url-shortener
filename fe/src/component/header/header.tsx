@@ -56,14 +56,16 @@ const SubTitle = styled.div`
 `;
 
 const Button = styled.button`
-  width: 80px;
-  height: 30px;
+  width: 70px;
+  height: 35px;
   border-radius: 5px;
-  border: none;
-  background-color: #4caf50;
+  border: 1px solid white;
+  background-color: inherit;
   color: white;
   &:hover {
-    background-color: gray;
+    color: gray;
+    border-color: gray;
+    transition: border-color 0.5s;
   }
 `;
 
@@ -95,19 +97,24 @@ function Header() {
         <SubTitle />
         <SubTitle />
         <SubTitle />
+        <SubTitle />
+        <SubTitle />
         {token ? (
-          <Links to="/mypage">
-            <SubTitle>My page</SubTitle>
-          </Links>
+          <>
+            <Links to="/mypage">
+              <SubTitle>My page</SubTitle>
+            </Links>
+            <Button onClick={deleteToken}>Logout</Button>
+          </>
         ) : (
-          <SubTitle />
-        )}
-        {token ? (
-          <Button onClick={deleteToken}>Logout</Button>
-        ) : (
-          <Links to="/login">
-            <SubTitle>Login</SubTitle>
-          </Links>
+          <>
+            <Links to="/create">
+              <Button>Sign up</Button>
+            </Links>
+            <Links to="/login">
+              <Button>Login</Button>
+            </Links>
+          </>
         )}
       </RightContainer>
     </Container>
