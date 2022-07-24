@@ -8,10 +8,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LocalStrategy } from './strategies/auth.local.strategy';
 import { JwtStrategy } from './strategies/auth.jwt.strategy';
+import { FTStrategy } from './strategies/auth.ft.strategy';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    HttpModule,
     UserModule,
     PassportModule,
     JwtModule.registerAsync({
@@ -22,7 +25,7 @@ import { JwtStrategy } from './strategies/auth.jwt.strategy';
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, FTStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
