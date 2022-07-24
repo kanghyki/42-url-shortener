@@ -99,7 +99,7 @@ export class URLService {
     if (ret.affected > 0) {
       return { ok: true, msg: 'Delete URL' };
     }
-    return { ok: false, msg: 'Failed Delete URL' };
+    return { ok: false, msg: 'Failed to delete URL' };
   }
 
   async updateURL(userID: string, body: UpdateURLDto) {

@@ -44,7 +44,7 @@ export class UserService {
     if (find.length > 0) {
       return { ok: true, msg: 'Get User', result: find };
     }
-    return { ok: false, msg: 'Failed Get User' };
+    return { ok: false, msg: 'Failed to get user' };
   }
 
   async UpdateUser(req: UpdateUserDto) {
@@ -55,7 +55,7 @@ export class UserService {
       await this.userRepository.save(user);
       return { ok: true, msg: 'Update User' };
     }
-    return { ok: false, msg: 'Failed Update User' };
+    return { ok: false, msg: 'Failed to update user' };
   }
 
   async deleteUser(userID: string) {
@@ -63,6 +63,6 @@ export class UserService {
     if (ret.affected > 0) {
       return { ok: true, msg: 'Delete User' };
     }
-    return { ok: false, msg: 'Failed Delete User' };
+    return { ok: false, msg: 'Failed to delete user' };
   }
 }

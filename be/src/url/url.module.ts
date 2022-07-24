@@ -4,7 +4,6 @@ import { URLController } from './url.controller';
 import { URLService } from './url.service';
 import { URL } from './url.entity';
 import { User } from 'src/user/user.entity';
-import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { HttpModule } from '@nestjs/axios';
@@ -18,6 +17,6 @@ import { HttpModule } from '@nestjs/axios';
     }),
   ],
   controllers: [URLController],
-  providers: [URLService, AuthService, UserService, JwtService],
+  providers: [URLService, UserService, JwtService],
 })
 export class UrlModule {}

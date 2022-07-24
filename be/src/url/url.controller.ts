@@ -8,16 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService } from 'src/auth/auth.service';
 import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
 import { URLService } from './url.service';
 
 @Controller('url')
 export class URLController {
-  constructor(
-    private readonly urlService: URLService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly urlService: URLService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
