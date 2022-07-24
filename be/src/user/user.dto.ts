@@ -6,7 +6,7 @@ export interface CreateUserDto {
 export interface UpdateUserDto {
   userID: string;
   oldPassword: string;
-  password: string;
+  newPassword: string;
 }
 
 export interface Register42UserDto {

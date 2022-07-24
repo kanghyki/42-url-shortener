@@ -23,7 +23,7 @@ export class UserService {
 
     const newUser = this.userRepository.create(req);
     await this.userRepository.save(newUser);
-    return { ok: true, msg: 'Create 42 User' };
+    return { ok: true, msg: 'Create User' };
   }
 
   async getUser(id: string) {
@@ -50,7 +50,7 @@ export class UserService {
   async UpdateUser(req: UpdateUserDto) {
     const user = await this.userRepository.findOneBy({ userID: req.userID });
     if (user && (await bcrypt.compare(req.oldPassword, user.password))) {
-      const hashPW = await bcrypt.hash(req.password, 10);
+      const hashPW = await bcrypt.hash(req.newPassword, 10);
       user.password = hashPW;
       await this.userRepository.save(user);
       return { ok: true, msg: 'Update User' };

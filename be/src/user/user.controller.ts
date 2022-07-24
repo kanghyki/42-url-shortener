@@ -43,7 +43,7 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @Patch()
   async UpdateUser(@Req() req: any, @Body() body: UpdateUserDto) {
-    if (body.password === undefined || body.oldPassword === undefined) {
+    if (body.newPassword === undefined || body.oldPassword === undefined) {
       return { ok: false, msg: 'Request Failed' };
     }
     const user = req.user;
