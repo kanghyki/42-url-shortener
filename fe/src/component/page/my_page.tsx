@@ -28,6 +28,12 @@ const UserContainer = styled.div`
   border-radius: 0px;
 `;
 
+const InfoContrainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -95,6 +101,9 @@ const deleteUser = async () => {
 function Mypage() {
   const [user, setUser] = useState({
     userID: '',
+    email: '',
+    intraID: '',
+    intraUniqueID: 0,
     isActive: false,
     createdAt: '',
     updatedAt: '',
@@ -119,9 +128,14 @@ function Mypage() {
     return (
       <>
         <UserContainer>
-          <div>userID: {user.userID}</div>
-          <div>CreateAt: {user.createdAt}</div>
-          <div>UpdateAt: {user.updatedAt}</div>
+          <InfoContrainer>
+            <div>intraUniqueID: {user.intraUniqueID}</div>
+            <div>intraID: {user.intraID}</div>
+            <div>userID: {user.userID}</div>
+            <div>email: {user.email}</div>
+            <div>CreateAt: {user.createdAt}</div>
+            <div>UpdateAt: {user.updatedAt}</div>
+          </InfoContrainer>
           <h1>URLs</h1>
           {user.urls.map((url, index) => (
             <div key={index}>

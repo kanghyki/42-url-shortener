@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 import Header from '../header/header';
 import { ENDPOINT } from '../../config';
 
@@ -48,8 +47,6 @@ const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
-const LinkBox = styled(Link)``;
 
 interface resBody {
   ok: boolean;
@@ -100,6 +97,9 @@ function Login() {
   const onChangePassword = (e: any) => {
     setPassword(e.target.value);
   };
+
+  const regi = `${ENDPOINT}/auth/42register`;
+
   return (
     <div>
       <Header />
@@ -128,7 +128,7 @@ function Login() {
             Login
           </Button>
         </MiddleContainer>
-        <LinkBox to="/create">create user</LinkBox>
+        <a href={regi}>42 Register</a>
       </Container>
     </div>
   );

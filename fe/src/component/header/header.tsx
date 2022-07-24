@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { ENDPOINT } from '../../config';
 
 const Container = styled.div`
   display: flex;
@@ -85,6 +86,8 @@ function Header() {
     document.location.href = '/';
   };
 
+  const regi = `${ENDPOINT}/auth/42register`;
+
   return (
     <Container>
       <LeftContainer>
@@ -108,9 +111,9 @@ function Header() {
           </>
         ) : (
           <>
-            <Links to="/create">
-              <Button>Sign up</Button>
-            </Links>
+            <a href={regi}>
+              <Button>Register</Button>
+            </a>
             <Links to="/login">
               <Button>Login</Button>
             </Links>
