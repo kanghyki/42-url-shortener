@@ -3,6 +3,12 @@ export interface CreateUserDto {
   password: string;
 }
 
+export interface UpdateUserDto {
+  userID: string;
+  oldPassword: string;
+  password: string;
+}
+
 export interface Register42UserDto {
   intraUniqueID: number;
   userID: string;

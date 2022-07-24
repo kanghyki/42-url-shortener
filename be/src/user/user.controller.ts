@@ -3,13 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  Patch,
   Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FTAuthGuard } from 'src/auth/strategies/ft-auth.guard';
-import { CreateUserDto, Register42UserDto } from './user.dto';
+import { CreateUserDto, Register42UserDto, UpdateUserDto } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('/user')
@@ -37,6 +38,17 @@ export class UserController {
       email: user.email,
     };
     return await this.userService.createNewUser(regi42user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch()
+  async UpdateUser(@Req() req: any, @Body() body: UpdateUserDto) {
+    if (body.password === undefined || body.oldPassword === undefined) {
+      return { ok: false, msg: 'Request Failed' };
+    }
+    const user = req.user;
+    body.userID = user.userID;
+    return this.userService.UpdateUser(body);
   }
 
   @UseGuards(AuthGuard('jwt'))

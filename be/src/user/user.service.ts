@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto, Register42UserDto } from './user.dto';
+import { Register42UserDto, UpdateUserDto } from './user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 
@@ -45,6 +45,17 @@ export class UserService {
       return { ok: true, msg: 'Get User', result: find };
     }
     return { ok: false, msg: 'Failed Get User' };
+  }
+
+  async UpdateUser(req: UpdateUserDto) {
+    const user = await this.userRepository.findOneBy({ userID: req.userID });
+    if (user && (await bcrypt.compare(req.oldPassword, user.password))) {
+      const hashPW = await bcrypt.hash(req.password, 10);
+      user.password = hashPW;
+      await this.userRepository.save(user);
+      return { ok: true, msg: 'Update User' };
+    }
+    return { ok: false, msg: 'Failed Update User' };
   }
 
   async deleteUser(userID: string) {
