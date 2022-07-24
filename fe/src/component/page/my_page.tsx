@@ -104,35 +104,6 @@ const getUser = async () => {
   return body.result.pop();
 };
 
-const deleteUser = async () => {
-  const url = `${ENDPOINT}/user/`;
-  const option = {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `bearer ${localStorage.getItem('token')}`,
-    },
-  };
-  const res = await fetch(url, option);
-  if (!res.ok) {
-    alert('Something went wrong. Logout');
-    localStorage.removeItem('token');
-    document.location.href = '/';
-    return;
-  }
-  const json = await res.json();
-  const body: resBody = json;
-  if (!body.ok) {
-    alert(body.msg);
-    localStorage.removeItem('token');
-    document.location.href = '/';
-    return;
-  }
-  alert('Delete Account');
-  localStorage.removeItem('token');
-  document.location.href = '/';
-};
-
 function Mypage() {
   const [user, setUser] = useState({
     userID: '',
@@ -159,55 +130,59 @@ function Mypage() {
     getU();
   }, []);
 
-  const makeUserContainer = () => {
+  const makeUserInfoContainer = () => {
     return (
       <>
-        <UserContainer>
-          <InfoContrainer>
-            <LineContainer>
-              <LineContent>42-Intra ID</LineContent>
-              <LineContent>{user.intraUniqueID}</LineContent>
-            </LineContainer>
-            <LineContainer>
-              <LineContent>42-Intra Username</LineContent>
-              <LineContent>{user.intraID}</LineContent>
-            </LineContainer>
-            <LineContainer>
-              <LineContent>42-Intra Email</LineContent>
-              <LineContent>{user.email}</LineContent>
-            </LineContainer>
-            <LineContainer>
-              <LineContent>Username</LineContent>
-              <LineContent>{user.userID}</LineContent>
-            </LineContainer>
-            <LineContainer>
-              <LineContent>createAt</LineContent>
-              <LineContent>{user.createdAt}</LineContent>
-            </LineContainer>
-            <LineContainer>
-              <LineContent>updatedAt</LineContent>
-              <LineContent>{user.updatedAt}</LineContent>
-            </LineContainer>
-          </InfoContrainer>
-          <ButtonContainer>
-            <Links to="/edit">
-              <Button>Change Password</Button>
-            </Links>
-            <Button onClick={deleteUser}>Delete Account</Button>
-          </ButtonContainer>
-          {user.urls.length === 0 ? (
-            <h1>No URL</h1>
-          ) : (
-            <>
-              <h1>Shorten URL List</h1>
-              {user.urls.map((url, index) => (
-                <div key={index}>
-                  <Url url={url} />
-                </div>
-              ))}
-            </>
-          )}
-        </UserContainer>
+        <LineContainer>
+          <LineContent>42-Intra ID</LineContent>
+          <LineContent>{user.intraUniqueID}</LineContent>
+        </LineContainer>
+        <LineContainer>
+          <LineContent>42-Intra Username</LineContent>
+          <LineContent>{user.intraID}</LineContent>
+        </LineContainer>
+        <LineContainer>
+          <LineContent>42-Intra Email</LineContent>
+          <LineContent>{user.email}</LineContent>
+        </LineContainer>
+        <LineContainer>
+          <LineContent>Username</LineContent>
+          <LineContent>{user.userID}</LineContent>
+        </LineContainer>
+        <LineContainer>
+          <LineContent>createAt</LineContent>
+          <LineContent>{user.createdAt}</LineContent>
+        </LineContainer>
+        <LineContainer>
+          <LineContent>updatedAt</LineContent>
+          <LineContent>{user.updatedAt}</LineContent>
+        </LineContainer>
+      </>
+    );
+  };
+
+  const makeButtonContainer = () => {
+    return (
+      <>
+        <Links to="/edit">
+          <Button>Change Password</Button>
+        </Links>
+        <Links to="/delete">
+          <Button>Delete Account</Button>
+        </Links>
+      </>
+    );
+  };
+
+  const makeURLs = () => {
+    return (
+      <>
+        <h1>Shorten URL List</h1>
+        {user.urls.map((url, index) => (
+          <div key={index}>
+            <Url url={url} />
+          </div>
+        ))}
       </>
     );
   };
@@ -217,7 +192,15 @@ function Mypage() {
       <Header />
       <Container>
         <h1>My Page</h1>
-        {user.isActive ? <>{makeUserContainer()}</> : <></>}
+        {user.isActive ? (
+          <UserContainer>
+            <InfoContrainer>{makeUserInfoContainer()}</InfoContrainer>
+            <ButtonContainer>{makeButtonContainer()}</ButtonContainer>
+            {user.urls.length === 0 ? <h1>No URL</h1> : makeURLs()}
+          </UserContainer>
+        ) : (
+          <></>
+        )}
       </Container>
     </div>
   );
