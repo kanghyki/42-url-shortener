@@ -7,6 +7,7 @@ import NotFound from './component/page/not_found';
 import Register from './component/page/register';
 import Wrong from './component/page/wrong';
 import GlobalStyle from './global/global_style';
+import Edit from './component/page/edit';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/mypage" element={<Mypage />} />
+          <Route path="/edit" element={<Edit />} />
           <Route path="/wrong" element={<Wrong />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

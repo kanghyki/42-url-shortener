@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { ENDPOINT } from '../../config';
 import Header from '../header/header';
 import Url from './url';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const Button = styled.button`
   border-radius: 5px;
@@ -10,12 +17,16 @@ const Button = styled.button`
   background-color: gray;
   color: white;
   margin: 20px;
-  padding: 10px 20px;
-  font-size: 30px;
+  padding: 10px 15px;
+  font-size: 15px;
   &:hover {
     background-color: #4caf50;
     transition: background-color 0.3s;
   }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
 `;
 
 const UserContainer = styled.div`
@@ -28,16 +39,40 @@ const UserContainer = styled.div`
   border-radius: 0px;
 `;
 
+const LineContainer = styled.div`
+  display: flex;
+  margin: 3px;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const LineContent = styled.div`
+  width: 150px;
+  display: flex;
+  align-items: left;
+  width: 50%;
+`;
+
 const InfoContrainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: left;
+  align-items: center;
+  width: 30%;
 `;
 
-const Container = styled.div`
+const Links = styled(Link)`
   display: flex;
-  flex-direction: column;
+  cursor: pointer;
   align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  &:focus,
+  &:hover,
+  &:visited,
+  &:link,
+  &:active {
+    text-decoration: none;
+  }
 `;
 
 interface resBody {
@@ -51,7 +86,7 @@ const getUser = async () => {
   const option = {
     method: 'GET',
     headers: {
-      Accept: 'application/json',
+      'Content-Type': 'application/json',
       Authorization: `bearer ${localStorage.getItem('token')}`,
     },
   };
@@ -129,21 +164,50 @@ function Mypage() {
       <>
         <UserContainer>
           <InfoContrainer>
-            <div>intraUniqueID: {user.intraUniqueID}</div>
-            <div>intraID: {user.intraID}</div>
-            <div>userID: {user.userID}</div>
-            <div>email: {user.email}</div>
-            <div>CreateAt: {user.createdAt}</div>
-            <div>UpdateAt: {user.updatedAt}</div>
+            <LineContainer>
+              <LineContent>42-Intra ID</LineContent>
+              <LineContent>{user.intraUniqueID}</LineContent>
+            </LineContainer>
+            <LineContainer>
+              <LineContent>42-Intra Username</LineContent>
+              <LineContent>{user.intraID}</LineContent>
+            </LineContainer>
+            <LineContainer>
+              <LineContent>42-Intra Email</LineContent>
+              <LineContent>{user.email}</LineContent>
+            </LineContainer>
+            <LineContainer>
+              <LineContent>Username</LineContent>
+              <LineContent>{user.userID}</LineContent>
+            </LineContainer>
+            <LineContainer>
+              <LineContent>createAt</LineContent>
+              <LineContent>{user.createdAt}</LineContent>
+            </LineContainer>
+            <LineContainer>
+              <LineContent>updatedAt</LineContent>
+              <LineContent>{user.updatedAt}</LineContent>
+            </LineContainer>
           </InfoContrainer>
-          <h1>URLs</h1>
-          {user.urls.map((url, index) => (
-            <div key={index}>
-              <Url url={url} />
-            </div>
-          ))}
+          <ButtonContainer>
+            <Links to="/edit">
+              <Button>Change Password</Button>
+            </Links>
+            <Button onClick={deleteUser}>Delete Account</Button>
+          </ButtonContainer>
+          {user.urls.length === 0 ? (
+            <h1>No URL</h1>
+          ) : (
+            <>
+              <h1>Shorten URL List</h1>
+              {user.urls.map((url, index) => (
+                <div key={index}>
+                  <Url url={url} />
+                </div>
+              ))}
+            </>
+          )}
         </UserContainer>
-        <Button onClick={deleteUser}>Delete Account</Button>
       </>
     );
   };

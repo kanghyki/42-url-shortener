@@ -54,26 +54,27 @@ interface resBody {
   access_token: string;
 }
 
-const LoginMethod = async (id: string, password: string) => {
-  if (id.length <= 0 || password.length <= 0) {
+const EditMethod = async (oldPassword: string, newPassword: string) => {
+  if (oldPassword.length <= 0 || newPassword.length <= 0) {
     alert('Please input text in box');
     return;
   }
-  const url = `${ENDPOINT}/auth/login/`;
+  const url = `${ENDPOINT}/user/`;
   const option = {
-    method: 'POST',
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `bearer ${localStorage.getItem('token')}`,
     },
     body: JSON.stringify({
-      userID: id,
-      password: password,
+      oldPassword: oldPassword,
+      newPassword: newPassword,
     }),
   };
 
   const res = await fetch(url, option);
   if (!res.ok) {
-    alert('Login failed');
+    alert('Authorization failed');
     return;
   }
   const json = await res.json();
@@ -82,54 +83,55 @@ const LoginMethod = async (id: string, password: string) => {
     alert(body.msg);
     return;
   }
-  localStorage.setItem('token', body.access_token);
-  document.location.href = '/';
+  alert(`${body.msg}, Please Re-login`);
+  document.location.href = '/login';
 };
 
-function Login() {
-  const [id, setID] = useState('');
+function Edit() {
+  const [old, setOld] = useState('');
   const [password, setPassword] = useState('');
   const onChangeID = (e: any) => {
-    setID(e.target.value);
+    setOld(e.target.value);
   };
   const onChangePassword = (e: any) => {
     setPassword(e.target.value);
   };
 
-  const regi = `${ENDPOINT}/auth/42register`;
-
   return (
     <div>
       <Header />
       <Container>
-        <h1>Login</h1>
+        <h1>Edit Password</h1>
         <MiddleContainer>
           <InputContainer>
-            <Input onChange={onChangeID} type="id" placeholder="ID" />
+            <Input
+              onChange={onChangeID}
+              type="password"
+              placeholder="OLD PASSWORD"
+            />
             <Input
               type="password"
               required
               onChange={onChangePassword}
-              placeholder="PASSWORD"
+              placeholder="NEW PASSWORD"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  LoginMethod(id, password);
+                  EditMethod(old, password);
                 }
               }}
             />
           </InputContainer>
           <Button
             onClick={() => {
-              LoginMethod(id, password);
+              EditMethod(old, password);
             }}
           >
-            Login
+            Confirm
           </Button>
         </MiddleContainer>
-        <a href={regi}>42 Register</a>
       </Container>
     </div>
   );
 }
 
-export default Login;
+export default Edit;

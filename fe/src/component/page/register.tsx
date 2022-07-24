@@ -132,10 +132,10 @@ const Create = async (id: string, password: string) => {
   const body: resBody = json;
   if (!body.ok) {
     alert(body.msg);
-    document.location.href = '/create';
+    document.location.href = '/register';
     return;
   }
-  alert('Created');
+  alert('Created User');
   document.location.href = '/login';
 };
 
@@ -175,7 +175,7 @@ function Register() {
         {terms ? (
           <MiddleContainer>
             <InputContainer>
-              <Input onChange={onChangeID} placeholder="ID" />
+              <Input onChange={onChangeID} type="id" placeholder="ID" />
               <Input
                 type="password"
                 required
