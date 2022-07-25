@@ -8,8 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ReturnDto } from 'src/dto/return.dto';
-import { CreateURLDto, DeleteURLDto, UpdateURLDto } from '../dto/url.dto';
+import { ReturnDTO } from 'src/dto/return.dto';
+import { CreateURLDTO, DeleteURLDTO, UpdateURLDTO } from '../dto/url.dto';
 import { URLService } from './url.service';
 
 @Controller('url')
@@ -20,8 +20,8 @@ export class URLController {
   @Post()
   async createURL(
     @Req() req: any,
-    @Body() body: CreateURLDto,
-  ): Promise<ReturnDto> {
+    @Body() body: CreateURLDTO,
+  ): Promise<ReturnDTO> {
     return await this.urlService.createURL(req.user, body);
   }
 
@@ -29,8 +29,8 @@ export class URLController {
   @Delete()
   async deleteURL(
     @Req() req: any,
-    @Body() body: DeleteURLDto,
-  ): Promise<ReturnDto> {
+    @Body() body: DeleteURLDTO,
+  ): Promise<ReturnDTO> {
     return await this.urlService.deleteURL(req.user, body);
   }
 
@@ -38,8 +38,8 @@ export class URLController {
   @Patch()
   async UpdateURL(
     @Req() req: any,
-    @Body() body: UpdateURLDto,
-  ): Promise<ReturnDto> {
+    @Body() body: UpdateURLDTO,
+  ): Promise<ReturnDTO> {
     return await this.urlService.updateURL(req.user, body);
   }
 }

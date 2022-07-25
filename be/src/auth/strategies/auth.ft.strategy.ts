@@ -3,14 +3,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { lastValueFrom } from 'rxjs';
 import { Strategy } from 'passport-oauth2';
-import { AuthService } from '../auth.service';
+import { FTUser } from 'src/interface/interface';
 
 @Injectable()
 export class FTStrategy extends PassportStrategy(Strategy, 'ft') {
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly authService: AuthService,
-  ) {
+  constructor(private readonly httpService: HttpService) {
     super({
       authorizationURL: `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.FT_UID}&redirect_uri=${process.env.FT_CALLBACK}&response_type=${process.env.FT_RESPONSE}`,
       tokenURL: 'https://api.intra.42.fr/oauth/token',
@@ -20,14 +17,14 @@ export class FTStrategy extends PassportStrategy(Strategy, 'ft') {
     });
   }
 
-  async validate(accessToken: string) {
-    const req = this.httpService.get(process.env.FT_INTRA_ME, {
+  async validate(accessToken: string): Promise<FTUser> {
+    const result = this.httpService.get(process.env.FT_INTRA_ME, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    const reqResult = await lastValueFrom(req);
-    if (!reqResult) {
+    const req = await lastValueFrom(result);
+    if (!req) {
       throw new UnauthorizedException();
     }
-    return reqResult.data;
+    return req.data;
   }
 }

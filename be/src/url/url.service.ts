@@ -4,8 +4,8 @@ import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { URL } from '../entity/url.entity';
 import { User } from 'src/entity/user.entity';
-import { CreateURLDto, DeleteURLDto, UpdateURLDto } from '../dto/url.dto';
-import { ReturnDto } from 'src/dto/return.dto';
+import { CreateURLDTO, DeleteURLDTO, UpdateURLDTO } from '../dto/url.dto';
+import { ReturnDTO } from 'src/dto/return.dto';
 import { JwtUser } from 'src/interface/interface';
 import * as bcrypt from 'bcrypt';
 import * as base62 from 'base62-ts';
@@ -18,11 +18,11 @@ export class URLService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async checkURLOwnership(userID: string, url: string) {
-    const user = await this.userRepository.findOneBy({
-      userID: userID,
+  async checkURLOwnership(username: string, url: string) {
+    const user: User = await this.userRepository.findOneBy({
+      username: username,
     });
-    const findURL = await this.urlRepository.findOne({
+    const findURL: URL = await this.urlRepository.findOne({
       relations: { user: true },
       where: { shortURL: url },
     });
@@ -46,7 +46,7 @@ export class URLService {
   }
 
   async getShortifiedURL(originURL: string): Promise<string> {
-    let shortenURL = await this.encodeURL(originURL);
+    let shortenURL: string = await this.encodeURL(originURL);
     let count = 0;
     while (
       (await this.urlRepository.findOneBy({
@@ -71,43 +71,45 @@ export class URLService {
     return true;
   }
 
-  async createURL(jwtUser: JwtUser, body: CreateURLDto): Promise<ReturnDto> {
+  async createURL(jwtUser: JwtUser, body: CreateURLDTO): Promise<ReturnDTO> {
     if ((await this.checkHealthURL(body.originURL)) === false) {
       return { ok: false, msg: 'Unhealth Origin URL Server', result: null };
     }
-    const shortenURL = await this.getShortifiedURL(body.originURL);
+    const shortenURL: string = await this.getShortifiedURL(body.originURL);
     if (shortenURL === '') {
       return { ok: false, msg: 'Shortify Error', result: null };
     }
-    const user = await this.userRepository.findOneBy({
-      userID: jwtUser.userID,
+    const user: User = await this.userRepository.findOneBy({
+      username: jwtUser.username,
     });
-    const newURL = this.urlRepository.create(body);
+    const newURL: URL = this.urlRepository.create(body);
     newURL.shortURL = shortenURL;
     newURL.user = user;
     newURL.called = 0;
-    const ret = await this.urlRepository.save(newURL);
+    const ret: URL = await this.urlRepository.save(newURL);
     ret.id = undefined;
     ret.user = undefined;
     return { ok: true, msg: 'Create URL', result: ret };
   }
 
-  async deleteURL(jwtUser: JwtUser, body: DeleteURLDto): Promise<ReturnDto> {
+  async deleteURL(jwtUser: JwtUser, body: DeleteURLDTO): Promise<ReturnDTO> {
     if (
-      (await this.checkURLOwnership(jwtUser.userID, body.shortURL)) === false
+      (await this.checkURLOwnership(jwtUser.username, body.shortURL)) === false
     ) {
       return { ok: false, msg: 'You have not Ownership', result: null };
     }
-    const ret = await this.urlRepository.delete({ shortURL: body.shortURL });
+    const ret: any = await this.urlRepository.delete({
+      shortURL: body.shortURL,
+    });
     if (ret.affected <= 0) {
       return { ok: false, msg: 'Failed to delete URL', result: null };
     }
     return { ok: true, msg: 'Delete URL', result: null };
   }
 
-  async updateURL(jwtUser: JwtUser, body: UpdateURLDto): Promise<ReturnDto> {
+  async updateURL(jwtUser: JwtUser, body: UpdateURLDTO): Promise<ReturnDTO> {
     if (
-      (await this.checkURLOwnership(jwtUser.userID, body.shortURL)) === false
+      (await this.checkURLOwnership(jwtUser.username, body.shortURL)) === false
     ) {
       return { ok: false, msg: 'You have not Ownership', result: null };
     }
@@ -116,12 +118,12 @@ export class URLService {
     ) {
       return { ok: false, msg: 'Duplicated URL', result: null };
     }
-    const findURL = await this.urlRepository.findOneBy({
+    const findURL: URL = await this.urlRepository.findOneBy({
       shortURL: body.shortURL,
     });
     findURL.shortURL = body.newURL;
     findURL.called = 0;
-    const ret = await this.urlRepository.save(findURL);
+    const ret: URL = await this.urlRepository.save(findURL);
     ret.id = undefined;
     return { ok: true, msg: 'Update URL', result: null };
   }

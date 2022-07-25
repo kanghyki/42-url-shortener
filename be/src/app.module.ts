@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
 import { UserModule } from './user/user.module';
 import { UrlModule } from './url/url.module';
 import { AuthModule } from './auth/auth.module';
@@ -30,6 +29,6 @@ import { URL } from './entity/url.entity';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -11,8 +11,8 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { FTAuthGuard } from 'src/auth/strategies/ft-auth.guard';
 import { UserService } from './user.service';
-import { ReturnDto } from 'src/dto/return.dto';
-import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
+import { ReturnDTO } from 'src/dto/return.dto';
+import { CreateUserDTO, UpdateUserDTO } from '../dto/user.dto';
 
 @Controller('/user')
 export class UserController {
@@ -20,7 +20,7 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  async getUser(@Req() req: any): Promise<ReturnDto> {
+  async getUser(@Req() req: any): Promise<ReturnDTO> {
     return await this.userService.getUser(req.user);
   }
 
@@ -28,8 +28,8 @@ export class UserController {
   @Post()
   async createNewUser(
     @Req() req: any,
-    @Body() body: CreateUserDto,
-  ): Promise<ReturnDto> {
+    @Body() body: CreateUserDTO,
+  ): Promise<ReturnDTO> {
     return await this.userService.createNewUser(req.user, body);
   }
 
@@ -37,14 +37,14 @@ export class UserController {
   @Patch()
   async UpdateUser(
     @Req() req: any,
-    @Body() body: UpdateUserDto,
-  ): Promise<ReturnDto> {
-    return await this.userService.UpdateUser(req.user, body);
+    @Body() body: UpdateUserDTO,
+  ): Promise<ReturnDTO> {
+    return await this.userService.updateUser(req.user, body);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete()
-  async deleteUser(@Req() req: any): Promise<ReturnDto> {
+  async deleteUser(@Req() req: any): Promise<ReturnDTO> {
     return await this.userService.deleteUser(req.user);
   }
 }

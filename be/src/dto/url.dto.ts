@@ -1,18 +1,18 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateURLDto {
+export class CreateURLDTO {
   @IsString()
   @IsNotEmpty()
   originURL: string;
 }
 
-export class DeleteURLDto {
+export class DeleteURLDTO {
   @IsString()
   @IsNotEmpty()
   shortURL: string;
 }
 
-export class UpdateURLDto {
+export class UpdateURLDTO {
   @IsString()
   @IsNotEmpty()
   shortURL: string;

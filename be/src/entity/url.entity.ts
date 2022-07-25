@@ -10,18 +10,18 @@ import { User } from 'src/entity/user.entity';
 @Entity()
 export class URL {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  originURL!: string;
+  originURL: string;
 
   @Column({
     unique: true,
   })
-  shortURL!: string;
+  shortURL: string;
 
   @Column()
-  called!: number;
+  called: number;
 
   @ManyToOne(() => User, (user) => user.urls, {
     onDelete: 'CASCADE',
