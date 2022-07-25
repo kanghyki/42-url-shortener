@@ -32,11 +32,6 @@ export class User {
   @Column()
   email: string;
 
-  @Column({
-    nullable: true,
-  })
-  token: string;
-
   @Column({ default: true })
   isActive: boolean;
 

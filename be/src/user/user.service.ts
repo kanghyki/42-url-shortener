@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { Register42UserDto, UpdateUserDto } from '../dto/user.dto';
 import { ReturnDto } from 'src/dto/return.dto';
-import * as bcrypt from 'bcrypt';
 import { FTUser, JwtUser } from 'src/interface/interface';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -23,7 +23,6 @@ export class UserService {
       },
     });
     find.map((user) => {
-      user.token = undefined;
       user.id = undefined;
       user.password = undefined;
       user.urls.map((url) => (url.id = undefined));
@@ -60,20 +59,20 @@ export class UserService {
     const user = await this.userRepository.findOneBy({
       userID: jwtUser.userID,
     });
-    if (user && (await bcrypt.compare(body.oldPassword, user.password))) {
-      const hashPW = await bcrypt.hash(body.newPassword, 10);
-      user.password = hashPW;
-      await this.userRepository.save(user);
-      return { ok: true, msg: 'Update User', result: null };
+    if (!user || !(await bcrypt.compare(body.oldPassword, user.password))) {
+      return { ok: false, msg: 'Failed to update user', result: null };
     }
-    return { ok: false, msg: 'Failed to update user', result: null };
+    const hashPW = await bcrypt.hash(body.newPassword, 10);
+    user.password = hashPW;
+    await this.userRepository.save(user);
+    return { ok: true, msg: 'Update User', result: null };
   }
 
   async deleteUser(jwtUser: JwtUser): Promise<ReturnDto> {
     const ret = await this.userRepository.delete({ userID: jwtUser.userID });
-    if (ret.affected > 0) {
-      return { ok: true, msg: 'Delete User', result: null };
+    if (ret.affected <= 0) {
+      return { ok: false, msg: 'Failed to delete user', result: null };
     }
-    return { ok: false, msg: 'Failed to delete user', result: null };
+    return { ok: true, msg: 'Delete User', result: null };
   }
 }

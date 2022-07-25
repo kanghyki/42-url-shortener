@@ -6,9 +6,9 @@ import { URL } from '../entity/url.entity';
 import { User } from 'src/entity/user.entity';
 import { CreateURLDto, DeleteURLDto, UpdateURLDto } from '../dto/url.dto';
 import { ReturnDto } from 'src/dto/return.dto';
+import { JwtUser } from 'src/interface/interface';
 import * as bcrypt from 'bcrypt';
 import * as base62 from 'base62-ts';
-import { JwtUser } from 'src/interface/interface';
 
 @Injectable()
 export class URLService {
@@ -26,13 +26,9 @@ export class URLService {
       relations: { user: true },
       where: { shortURL: url },
     });
-    if (user === null || findURL === null) {
+    if (user === null || findURL === null || findURL.user.id !== user.id) {
       return false;
     }
-    if (findURL.user.id !== user.id) {
-      return false;
-    }
-
     return true;
   }
 
@@ -49,7 +45,7 @@ export class URLService {
     return encoded;
   }
 
-  async getNoDuplicateHashURL(originURL: string): Promise<string> {
+  async getShortifiedURL(originURL: string): Promise<string> {
     let shortenURL = await this.encodeURL(originURL);
     let count = 0;
     while (
@@ -79,9 +75,9 @@ export class URLService {
     if ((await this.checkHealthURL(body.originURL)) === false) {
       return { ok: false, msg: 'Unhealth Origin URL Server', result: null };
     }
-    const shortenURL = await this.getNoDuplicateHashURL(body.originURL);
+    const shortenURL = await this.getShortifiedURL(body.originURL);
     if (shortenURL === '') {
-      return { ok: false, msg: 'Short Error', result: null };
+      return { ok: false, msg: 'Shortify Error', result: null };
     }
     const user = await this.userRepository.findOneBy({
       userID: jwtUser.userID,
@@ -103,10 +99,10 @@ export class URLService {
       return { ok: false, msg: 'You have not Ownership', result: null };
     }
     const ret = await this.urlRepository.delete({ shortURL: body.shortURL });
-    if (ret.affected > 0) {
-      return { ok: true, msg: 'Delete URL', result: null };
+    if (ret.affected <= 0) {
+      return { ok: false, msg: 'Failed to delete URL', result: null };
     }
-    return { ok: false, msg: 'Failed to delete URL', result: null };
+    return { ok: true, msg: 'Delete URL', result: null };
   }
 
   async updateURL(jwtUser: JwtUser, body: UpdateURLDto): Promise<ReturnDto> {

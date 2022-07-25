@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UserModule } from 'src/user/user.module';
 import { PassportModule } from '@nestjs/passport';
-import { User } from 'src/entity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
 import { LocalStrategy } from './strategies/auth.local.strategy';
 import { JwtStrategy } from './strategies/auth.jwt.strategy';
 import { FTStrategy } from './strategies/auth.ft.strategy';
-import { HttpModule } from '@nestjs/axios';
+import { AuthService } from './auth.service';
+import { UserModule } from 'src/user/user.module';
+import { User } from 'src/entity/user.entity';
 
 @Module({
   imports: [

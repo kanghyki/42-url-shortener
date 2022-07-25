@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { URLController } from './url.controller';
-import { URLService } from './url.service';
-import { URL } from '../entity/url.entity';
-import { User } from 'src/entity/user.entity';
-import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { HttpModule } from '@nestjs/axios';
+import { URLController } from './url.controller';
+import { URLService } from './url.service';
+import { UserService } from 'src/user/user.service';
+import { URL } from '../entity/url.entity';
+import { User } from 'src/entity/user.entity';
 
 @Module({
   imports: [
