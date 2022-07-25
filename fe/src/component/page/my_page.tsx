@@ -106,10 +106,10 @@ const getUser = async () => {
 
 function Mypage() {
   const [user, setUser] = useState({
-    userID: '',
+    username: '',
     email: '',
-    intraID: '',
-    intraUniqueID: 0,
+    intraID: 0,
+    intraUsername: '',
     isActive: false,
     createdAt: '',
     updatedAt: '',
@@ -135,11 +135,11 @@ function Mypage() {
       <>
         <LineContainer>
           <LineContent>42-Intra ID</LineContent>
-          <LineContent>{user.intraUniqueID}</LineContent>
+          <LineContent>{user.intraID}</LineContent>
         </LineContainer>
         <LineContainer>
           <LineContent>42-Intra Username</LineContent>
-          <LineContent>{user.intraID}</LineContent>
+          <LineContent>{user.intraUsername}</LineContent>
         </LineContainer>
         <LineContainer>
           <LineContent>42-Intra Email</LineContent>
@@ -147,7 +147,7 @@ function Mypage() {
         </LineContainer>
         <LineContainer>
           <LineContent>Username</LineContent>
-          <LineContent>{user.userID}</LineContent>
+          <LineContent>{user.username}</LineContent>
         </LineContainer>
         <LineContainer>
           <LineContent>createAt</LineContent>

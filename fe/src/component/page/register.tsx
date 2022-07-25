@@ -119,7 +119,7 @@ const Create = async (id: string, password: string) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      userID: id,
+      username: id,
       password: password,
     }),
   };
