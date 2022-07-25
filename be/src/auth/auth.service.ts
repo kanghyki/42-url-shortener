@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/entity/user.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AuthService {
       userID: username,
     });
     if (user && (await bcrypt.compare(pass, user.password))) {
-      const payload = { userID: user.userID };
+      const payload = { userID: user.userID, sub: user.id };
       const token = this.jwtService.sign(payload);
       return { ok: true, access_token: token };
     }

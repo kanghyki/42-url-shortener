@@ -9,7 +9,7 @@ import { AuthService } from '../auth.service';
 export class FTStrategy extends PassportStrategy(Strategy, 'ft') {
   constructor(
     private readonly httpService: HttpService,
-    private authService: AuthService,
+    private readonly authService: AuthService,
   ) {
     super({
       authorizationURL: `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.FT_UID}&redirect_uri=${process.env.FT_CALLBACK}&response_type=${process.env.FT_RESPONSE}`,

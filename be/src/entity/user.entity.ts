@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
 } from 'typeorm';
-import { URL } from 'src/url/url.entity';
+import { URL } from 'src/entity/url.entity';
 
 @Entity()
 export class User {

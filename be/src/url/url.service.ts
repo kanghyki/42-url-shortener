@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateURLDto, DeleteURLDto, UpdateURLDto } from './url.dto';
-import { URL } from './url.entity';
-import { User } from 'src/user/user.entity';
 import { HttpService } from '@nestjs/axios';
+import { Repository } from 'typeorm';
+import { URL } from '../entity/url.entity';
+import { User } from 'src/entity/user.entity';
+import { CreateURLDto, DeleteURLDto, UpdateURLDto } from '../dto/url.dto';
+import { ReturnDto } from 'src/dto/return.dto';
 import * as bcrypt from 'bcrypt';
 import * as base62 from 'base62-ts';
 
@@ -16,18 +17,7 @@ export class URLService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async calledURL(shortURL: string) {
-    const url = await this.urlRepository.findOneBy({ shortURL: shortURL });
-    if (url === null) {
-      return false;
-    }
-
-    url.called += 1;
-    await this.urlRepository.save(url);
-    return url.originURL;
-  }
-
-  async comfirmURLOwnership(userID: string, url: string) {
+  async checkURLOwnership(userID: string, url: string) {
     const user = await this.userRepository.findOneBy({
       userID: userID,
     });
@@ -47,24 +37,19 @@ export class URLService {
 
   async encodeURL(originURL: string): Promise<string> {
     const hash = await bcrypt.hash(originURL, 10);
-    let sum;
-    for (let i = 0; hash[i]; i++) {
-      if (sum === undefined) {
-        sum = hash[i].charCodeAt(0);
-      }
+    if (!hash) {
+      return 'error';
+    }
+    let sum = hash[0].charCodeAt(0);
+    for (let i = 1; hash[i]; i++) {
       sum += hash[i].charCodeAt(0);
     }
     const encoded = base62.encode(parseInt(sum));
     return encoded;
   }
 
-  async createURL(userID: string, body: CreateURLDto): Promise<object> {
-    try {
-      await this.httpService.axiosRef.get(body.originURL);
-    } catch (e) {
-      return { ok: false, msg: 'Unhealth Origin URL Server' };
-    }
-    let shortenURL = await this.encodeURL(body.originURL);
+  async getNoDuplicateHashURL(originURL: string): Promise<string> {
+    let shortenURL = await this.encodeURL(originURL);
     let count = 0;
     while (
       (await this.urlRepository.findOneBy({
@@ -72,54 +57,69 @@ export class URLService {
       })) !== null
     ) {
       if (count > 10) {
-        return { ok: false, msg: 'Calculate Error Retry' };
+        return '';
       }
-      shortenURL = await this.encodeURL(body.originURL);
+      shortenURL = await this.encodeURL(originURL);
       count += 1;
     }
+    return shortenURL;
+  }
 
+  async checkHealthURL(originURL: string) {
+    try {
+      await this.httpService.axiosRef.get(originURL);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  async createURL(userID: string, body: CreateURLDto): Promise<ReturnDto> {
+    if ((await this.checkHealthURL(body.originURL)) === false) {
+      return { ok: false, msg: 'Unhealth Origin URL Server', result: null };
+    }
+    const shortenURL = await this.getNoDuplicateHashURL(body.originURL);
+    if (shortenURL === '') {
+      return { ok: false, msg: 'Short Error', result: null };
+    }
     const user = await this.userRepository.findOneBy({ userID: userID });
     const newURL = this.urlRepository.create(body);
     newURL.shortURL = shortenURL;
     newURL.user = user;
     newURL.called = 0;
     const ret = await this.urlRepository.save(newURL);
-
     ret.id = undefined;
     ret.user = undefined;
     return { ok: true, msg: 'Create URL', result: ret };
   }
 
-  async deleteURL(userID: string, body: DeleteURLDto) {
-    if ((await this.comfirmURLOwnership(userID, body.shortURL)) === false) {
-      return { ok: false, msg: 'You have not Ownership' };
+  async deleteURL(userID: string, body: DeleteURLDto): Promise<ReturnDto> {
+    if ((await this.checkURLOwnership(userID, body.shortURL)) === false) {
+      return { ok: false, msg: 'You have not Ownership', result: null };
     }
-
     const ret = await this.urlRepository.delete({ shortURL: body.shortURL });
     if (ret.affected > 0) {
-      return { ok: true, msg: 'Delete URL' };
+      return { ok: true, msg: 'Delete URL', result: null };
     }
-    return { ok: false, msg: 'Failed to delete URL' };
+    return { ok: false, msg: 'Failed to delete URL', result: null };
   }
 
-  async updateURL(userID: string, body: UpdateURLDto) {
-    if ((await this.comfirmURLOwnership(userID, body.shortURL)) === false) {
-      return { ok: false, msg: 'You have not Ownership' };
+  async updateURL(userID: string, body: UpdateURLDto): Promise<ReturnDto> {
+    if ((await this.checkURLOwnership(userID, body.shortURL)) === false) {
+      return { ok: false, msg: 'You have not Ownership', result: null };
     }
     if (
       (await this.urlRepository.findOneBy({ shortURL: body.newURL })) !== null
     ) {
-      return { ok: false, msg: 'Duplicated URL' };
+      return { ok: false, msg: 'Duplicated URL', result: null };
     }
-
     const findURL = await this.urlRepository.findOneBy({
       shortURL: body.shortURL,
     });
     findURL.shortURL = body.newURL;
     findURL.called = 0;
     const ret = await this.urlRepository.save(findURL);
-
     ret.id = undefined;
-    return { ok: true, msg: 'Update URL' };
+    return { ok: true, msg: 'Update URL', result: null };
   }
 }

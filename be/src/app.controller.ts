@@ -16,6 +16,6 @@ export class AppController {
   @UseGuards(FTAuthGuard)
   @Get('auth/42register')
   Register42() {
-    return '42';
+    return 'Register42';
   }
 }

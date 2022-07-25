@@ -10,8 +10,13 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FTAuthGuard } from 'src/auth/strategies/ft-auth.guard';
-import { CreateUserDto, Register42UserDto, UpdateUserDto } from './user.dto';
 import { UserService } from './user.service';
+import { ReturnDto } from 'src/dto/return.dto';
+import {
+  CreateUserDto,
+  Register42UserDto,
+  UpdateUserDto,
+} from '../dto/user.dto';
 
 @Controller('/user')
 export class UserController {
@@ -19,15 +24,18 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  async findUser(@Req() req: any) {
-    return this.userService.getUser(req.user.userID);
+  async findUser(@Req() req: any): Promise<ReturnDto> {
+    return await this.userService.getUser(req.user.userID);
   }
 
   @UseGuards(FTAuthGuard)
   @Post()
-  async createNewUser(@Req() req: any, @Body() body: CreateUserDto) {
+  async createNewUser(
+    @Req() req: any,
+    @Body() body: CreateUserDto,
+  ): Promise<ReturnDto> {
     if (body.userID === undefined || body.password === undefined) {
-      return { ok: false, msg: 'Request Failed' };
+      return { ok: false, msg: 'Request Failed', result: null };
     }
     const user = req.user;
     const regi42user: Register42UserDto = {
@@ -42,9 +50,12 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch()
-  async UpdateUser(@Req() req: any, @Body() body: UpdateUserDto) {
+  async UpdateUser(
+    @Req() req: any,
+    @Body() body: UpdateUserDto,
+  ): Promise<ReturnDto> {
     if (body.newPassword === undefined || body.oldPassword === undefined) {
-      return { ok: false, msg: 'Request Failed' };
+      return { ok: false, msg: 'Request Failed', result: null };
     }
     const user = req.user;
     body.userID = user.userID;
@@ -53,7 +64,7 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @Delete()
-  async deleteUser(@Req() req: any) {
+  async deleteUser(@Req() req: any): Promise<ReturnDto> {
     return this.userService.deleteUser(req.user.userID);
   }
 }
