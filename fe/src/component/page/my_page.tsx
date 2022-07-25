@@ -101,7 +101,7 @@ const getUser = async () => {
     alert(body.msg);
     return;
   }
-  return body.result.pop();
+  return body.result;
 };
 
 function Mypage() {
