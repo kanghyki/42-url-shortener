@@ -16,26 +16,31 @@ export class User {
   @Column({
     unique: true,
   })
-  userID: string;
+  username: string;
 
   @Column()
   password: string;
 
   @Column({
     unique: true,
-    nullable: true,
   })
-  token: string;
+  intraID: number;
+
+  @Column()
+  intraUsername: string;
+
+  @Column()
+  email: string;
 
   @Column({ default: true })
   isActive: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
+  updatedAt: Date;
 
   @OneToMany(() => URL, (url) => url.user)
-  urls!: URL[];
+  urls: URL[];
 }
