@@ -13,13 +13,18 @@ export class AppService {
   }
 
   async redirectURL(redirURL: string, res: Response) {
-    const url = await this.urlRepository.findOneBy({ shortURL: redirURL });
-    if (url !== null) {
-      console.log(`This url {${url.shortURL}} has been called`);
-      url.called += 1;
+    const url: URL = await this.urlRepository.findOneBy({ shortURL: redirURL });
+    if (url === null) {
+      res.redirect(
+        HttpStatus.TEMPORARY_REDIRECT,
+        process.env.REDIRECT_TO_ERROR,
+      );
+    }
+    url.called += 1;
+    try {
       await this.urlRepository.save(url);
       res.redirect(HttpStatus.TEMPORARY_REDIRECT, url.originURL);
-    } else {
+    } catch {
       res.redirect(
         HttpStatus.TEMPORARY_REDIRECT,
         process.env.REDIRECT_TO_ERROR,

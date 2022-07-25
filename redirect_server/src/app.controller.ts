@@ -8,13 +8,11 @@ export class AppController {
 
   @Get()
   redirectToMain(@Res() res: Response) {
-    console.log('main');
     return this.appService.redirectToMain(res);
   }
 
   @Get(':url')
   async redirectURL(@Param('url') url: string, @Res() res: Response) {
-    console.log('url');
     return await this.appService.redirectURL(url, res);
   }
 }
