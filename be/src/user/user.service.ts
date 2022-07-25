@@ -49,8 +49,12 @@ export class UserService {
       username: body.username,
       password: hashPW,
     });
-    await this.userRepository.save(newUser);
-    return { ok: true, msg: 'Create User', result: null };
+    try {
+      await this.userRepository.save(newUser);
+      return { ok: true, msg: 'Create User', result: null };
+    } catch {
+      return { ok: false, msg: 'You already have an account', result: null };
+    }
   }
 
   async updateUser(jwtUser: JwtUser, body: UpdateUserDTO): Promise<ReturnDTO> {
@@ -62,8 +66,16 @@ export class UserService {
     }
     const hashPW: string = await bcrypt.hash(body.newPassword, 10);
     user.password = hashPW;
-    await this.userRepository.save(user);
-    return { ok: true, msg: 'Update User', result: null };
+    try {
+      await this.userRepository.save(user);
+      return { ok: true, msg: 'Update User', result: null };
+    } catch {
+      return {
+        ok: false,
+        msg: 'Something went wrong while updating the User',
+        result: null,
+      };
+    }
   }
 
   async deleteUser(jwtUser: JwtUser): Promise<ReturnDTO> {

@@ -118,7 +118,6 @@ const updateURL = async (newURL: string, props: Props) => {
     alert(body.msg);
     return;
   }
-  alert(`Update URL ${newURL}`);
   window.location.reload();
 };
 
@@ -145,7 +144,6 @@ const deleteURL = async (deleteURL: string) => {
     alert(body.msg);
     return;
   }
-  alert(`Delete URL ${deleteURL}`);
   window.location.reload();
 };
 

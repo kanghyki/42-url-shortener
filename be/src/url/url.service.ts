@@ -86,10 +86,18 @@ export class URLService {
     newURL.shortURL = shortenURL;
     newURL.user = user;
     newURL.called = 0;
-    const ret: URL = await this.urlRepository.save(newURL);
-    ret.id = undefined;
-    ret.user = undefined;
-    return { ok: true, msg: 'Create URL', result: ret };
+    try {
+      const ret: URL = await this.urlRepository.save(newURL);
+      ret.id = undefined;
+      ret.user = undefined;
+      return { ok: true, msg: 'Create URL', result: ret };
+    } catch {
+      return {
+        ok: false,
+        msg: 'Something went wrong while generating the URL',
+        result: null,
+      };
+    }
   }
 
   async deleteURL(jwtUser: JwtUser, body: DeleteURLDTO): Promise<ReturnDTO> {
@@ -123,8 +131,17 @@ export class URLService {
     });
     findURL.shortURL = body.newURL;
     findURL.called = 0;
-    const ret: URL = await this.urlRepository.save(findURL);
-    ret.id = undefined;
-    return { ok: true, msg: 'Update URL', result: null };
+    try {
+      const ret: URL = await this.urlRepository.save(findURL);
+      ret.id = undefined;
+      ret.user = undefined;
+      return { ok: true, msg: 'Update URL', result: ret };
+    } catch {
+      return {
+        ok: false,
+        msg: 'Something went wrong while updating the URL',
+        result: null,
+      };
+    }
   }
 }
