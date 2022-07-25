@@ -22,9 +22,6 @@ export class URLController {
     @Req() req: any,
     @Body() body: CreateURLDto,
   ): Promise<ReturnDto> {
-    if (body.originURL === undefined) {
-      return { ok: false, msg: 'Request Failed', result: null };
-    }
     return await this.urlService.createURL(req.user, body);
   }
 
@@ -34,9 +31,6 @@ export class URLController {
     @Req() req: any,
     @Body() body: DeleteURLDto,
   ): Promise<ReturnDto> {
-    if (body.shortURL === undefined) {
-      return { ok: false, msg: 'Request Failed', result: null };
-    }
     return await this.urlService.deleteURL(req.user, body);
   }
 
@@ -46,9 +40,6 @@ export class URLController {
     @Req() req: any,
     @Body() body: UpdateURLDto,
   ): Promise<ReturnDto> {
-    if (body.newURL === undefined || body.shortURL === undefined) {
-      return { ok: false, msg: 'Request Failed', result: null };
-    }
     return await this.urlService.updateURL(req.user, body);
   }
 }

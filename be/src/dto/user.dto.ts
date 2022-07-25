@@ -1,14 +1,24 @@
-export interface CreateUserDto {
+import { IsNotEmpty, IsString } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+
+export class CreateUserDto {
+  @IsString()
+  @IsNotEmpty()
   userID: string;
+
+  @IsString()
+  @IsNotEmpty()
   password: string;
 }
 
-export interface UpdateUserDto {
+export class UpdateUserDto {
+  @IsString()
+  @IsNotEmpty()
   oldPassword: string;
+
+  @IsString()
+  @IsNotEmpty()
   newPassword: string;
 }
 
-export interface Register42UserDto {
-  userID: string;
-  password: string;
-}
+export class Register42UserDto extends PartialType(CreateUserDto) {}

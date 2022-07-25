@@ -30,9 +30,6 @@ export class UserController {
     @Req() req: any,
     @Body() body: CreateUserDto,
   ): Promise<ReturnDto> {
-    if (body.userID === undefined || body.password === undefined) {
-      return { ok: false, msg: 'Request Failed', result: null };
-    }
     return await this.userService.createNewUser(req.user, body);
   }
 
@@ -42,15 +39,12 @@ export class UserController {
     @Req() req: any,
     @Body() body: UpdateUserDto,
   ): Promise<ReturnDto> {
-    if (body.newPassword === undefined || body.oldPassword === undefined) {
-      return { ok: false, msg: 'Request Failed', result: null };
-    }
-    return this.userService.UpdateUser(req.user, body);
+    return await this.userService.UpdateUser(req.user, body);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete()
   async deleteUser(@Req() req: any): Promise<ReturnDto> {
-    return this.userService.deleteUser(req.user);
+    return await this.userService.deleteUser(req.user);
   }
 }
