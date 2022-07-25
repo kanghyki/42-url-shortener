@@ -25,7 +25,7 @@ export class URLController {
     if (body.originURL === undefined) {
       return { ok: false, msg: 'Request Failed', result: null };
     }
-    return await this.urlService.createURL(req.user.userID, body);
+    return await this.urlService.createURL(req.user, body);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -37,20 +37,18 @@ export class URLController {
     if (body.shortURL === undefined) {
       return { ok: false, msg: 'Request Failed', result: null };
     }
-
-    return await this.urlService.deleteURL(req.user.userID, body);
+    return await this.urlService.deleteURL(req.user, body);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch()
-  async UpdataURL(
+  async UpdateURL(
     @Req() req: any,
     @Body() body: UpdateURLDto,
   ): Promise<ReturnDto> {
     if (body.newURL === undefined || body.shortURL === undefined) {
       return { ok: false, msg: 'Request Failed', result: null };
     }
-
-    return await this.urlService.updateURL(req.user.userID, body);
+    return await this.urlService.updateURL(req.user, body);
   }
 }

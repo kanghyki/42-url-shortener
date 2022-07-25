@@ -8,6 +8,7 @@ import { CreateURLDto, DeleteURLDto, UpdateURLDto } from '../dto/url.dto';
 import { ReturnDto } from 'src/dto/return.dto';
 import * as bcrypt from 'bcrypt';
 import * as base62 from 'base62-ts';
+import { JwtUser } from 'src/interface/interface';
 
 @Injectable()
 export class URLService {
@@ -74,7 +75,7 @@ export class URLService {
     return true;
   }
 
-  async createURL(userID: string, body: CreateURLDto): Promise<ReturnDto> {
+  async createURL(jwtUser: JwtUser, body: CreateURLDto): Promise<ReturnDto> {
     if ((await this.checkHealthURL(body.originURL)) === false) {
       return { ok: false, msg: 'Unhealth Origin URL Server', result: null };
     }
@@ -82,7 +83,9 @@ export class URLService {
     if (shortenURL === '') {
       return { ok: false, msg: 'Short Error', result: null };
     }
-    const user = await this.userRepository.findOneBy({ userID: userID });
+    const user = await this.userRepository.findOneBy({
+      userID: jwtUser.userID,
+    });
     const newURL = this.urlRepository.create(body);
     newURL.shortURL = shortenURL;
     newURL.user = user;
@@ -93,8 +96,10 @@ export class URLService {
     return { ok: true, msg: 'Create URL', result: ret };
   }
 
-  async deleteURL(userID: string, body: DeleteURLDto): Promise<ReturnDto> {
-    if ((await this.checkURLOwnership(userID, body.shortURL)) === false) {
+  async deleteURL(jwtUser: JwtUser, body: DeleteURLDto): Promise<ReturnDto> {
+    if (
+      (await this.checkURLOwnership(jwtUser.userID, body.shortURL)) === false
+    ) {
       return { ok: false, msg: 'You have not Ownership', result: null };
     }
     const ret = await this.urlRepository.delete({ shortURL: body.shortURL });
@@ -104,8 +109,10 @@ export class URLService {
     return { ok: false, msg: 'Failed to delete URL', result: null };
   }
 
-  async updateURL(userID: string, body: UpdateURLDto): Promise<ReturnDto> {
-    if ((await this.checkURLOwnership(userID, body.shortURL)) === false) {
+  async updateURL(jwtUser: JwtUser, body: UpdateURLDto): Promise<ReturnDto> {
+    if (
+      (await this.checkURLOwnership(jwtUser.userID, body.shortURL)) === false
+    ) {
       return { ok: false, msg: 'You have not Ownership', result: null };
     }
     if (

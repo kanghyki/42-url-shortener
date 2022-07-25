@@ -12,11 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { FTAuthGuard } from 'src/auth/strategies/ft-auth.guard';
 import { UserService } from './user.service';
 import { ReturnDto } from 'src/dto/return.dto';
-import {
-  CreateUserDto,
-  Register42UserDto,
-  UpdateUserDto,
-} from '../dto/user.dto';
+import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 
 @Controller('/user')
 export class UserController {
@@ -24,8 +20,8 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  async findUser(@Req() req: any): Promise<ReturnDto> {
-    return await this.userService.getUser(req.user.userID);
+  async getUser(@Req() req: any): Promise<ReturnDto> {
+    return await this.userService.getUser(req.user);
   }
 
   @UseGuards(FTAuthGuard)
@@ -37,15 +33,7 @@ export class UserController {
     if (body.userID === undefined || body.password === undefined) {
       return { ok: false, msg: 'Request Failed', result: null };
     }
-    const user = req.user;
-    const regi42user: Register42UserDto = {
-      intraUniqueID: user.id,
-      userID: body.userID,
-      password: body.password,
-      intraID: user.login,
-      email: user.email,
-    };
-    return await this.userService.createNewUser(regi42user);
+    return await this.userService.createNewUser(req.user, body);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -57,14 +45,12 @@ export class UserController {
     if (body.newPassword === undefined || body.oldPassword === undefined) {
       return { ok: false, msg: 'Request Failed', result: null };
     }
-    const user = req.user;
-    body.userID = user.userID;
-    return this.userService.UpdateUser(body);
+    return this.userService.UpdateUser(req.user, body);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete()
   async deleteUser(@Req() req: any): Promise<ReturnDto> {
-    return this.userService.deleteUser(req.user.userID);
+    return this.userService.deleteUser(req.user);
   }
 }

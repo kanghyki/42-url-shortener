@@ -5,6 +5,7 @@ import { User } from '../entity/user.entity';
 import { Register42UserDto, UpdateUserDto } from '../dto/user.dto';
 import { ReturnDto } from 'src/dto/return.dto';
 import * as bcrypt from 'bcrypt';
+import { FTUser, JwtUser } from 'src/interface/interface';
 
 @Injectable()
 export class UserService {
@@ -12,28 +13,13 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async createNewUser(req: Register42UserDto): Promise<ReturnDto> {
-    const user = await this.userRepository.findOneBy({
-      userID: req.userID,
-    });
-    if (user !== null) {
-      return { ok: false, msg: 'Already exist account', result: null };
-    }
-    const hashPW = await bcrypt.hash(req.password, 10);
-    req.password = hashPW;
-
-    const newUser = this.userRepository.create(req);
-    await this.userRepository.save(newUser);
-    return { ok: true, msg: 'Create User', result: null };
-  }
-
-  async getUser(id: string): Promise<ReturnDto> {
+  async getUser(jwtUser: JwtUser): Promise<ReturnDto> {
     const find = await this.userRepository.find({
       relations: {
         urls: true,
       },
       where: {
-        userID: id,
+        userID: jwtUser.userID,
       },
     });
     find.map((user) => {
@@ -48,10 +34,34 @@ export class UserService {
     return { ok: false, msg: 'Failed to get user', result: null };
   }
 
-  async UpdateUser(req: UpdateUserDto): Promise<ReturnDto> {
-    const user = await this.userRepository.findOneBy({ userID: req.userID });
-    if (user && (await bcrypt.compare(req.oldPassword, user.password))) {
-      const hashPW = await bcrypt.hash(req.newPassword, 10);
+  async createNewUser(
+    ftUser: FTUser,
+    body: Register42UserDto,
+  ): Promise<ReturnDto> {
+    const user = await this.userRepository.findOneBy({
+      userID: body.userID,
+    });
+    if (user !== null) {
+      return { ok: false, msg: 'Already exist account', result: null };
+    }
+    const hashPW = await bcrypt.hash(body.password, 10);
+    const newUser = this.userRepository.create({
+      intraUniqueID: ftUser.id,
+      intraID: ftUser.login,
+      email: ftUser.email,
+      userID: body.userID,
+      password: hashPW,
+    });
+    await this.userRepository.save(newUser);
+    return { ok: true, msg: 'Create User', result: null };
+  }
+
+  async UpdateUser(jwtUser: JwtUser, body: UpdateUserDto): Promise<ReturnDto> {
+    const user = await this.userRepository.findOneBy({
+      userID: jwtUser.userID,
+    });
+    if (user && (await bcrypt.compare(body.oldPassword, user.password))) {
+      const hashPW = await bcrypt.hash(body.newPassword, 10);
       user.password = hashPW;
       await this.userRepository.save(user);
       return { ok: true, msg: 'Update User', result: null };
@@ -59,8 +69,8 @@ export class UserService {
     return { ok: false, msg: 'Failed to update user', result: null };
   }
 
-  async deleteUser(userID: string): Promise<ReturnDto> {
-    const ret = await this.userRepository.delete({ userID: userID });
+  async deleteUser(jwtUser: JwtUser): Promise<ReturnDto> {
+    const ret = await this.userRepository.delete({ userID: jwtUser.userID });
     if (ret.affected > 0) {
       return { ok: true, msg: 'Delete User', result: null };
     }
