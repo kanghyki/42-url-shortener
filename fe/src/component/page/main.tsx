@@ -1,18 +1,8 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  createTheme,
-  TextField,
-  ThemeProvider,
-} from '@mui/material';
+import { Alert, Box, Button, Container, TextField } from '@mui/material';
 import { useState } from 'react';
 import { ENDPOINT, REDIRECT_ENDPOINT } from '../../config';
 import Footer from '../footer/footer';
 import Header from '../header/header';
-
-const theme = createTheme();
 
 interface resBody {
   ok: boolean;
@@ -122,9 +112,9 @@ function Main() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Header />
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="sm">
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -151,7 +141,7 @@ function Main() {
         <div>{body.ok === true ? GeneratedURL() : <></>}</div>
       </Container>
       <Footer />
-    </ThemeProvider>
+    </>
   );
 }
 

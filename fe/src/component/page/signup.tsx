@@ -9,7 +9,6 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
 import { ENDPOINT } from '../../config';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -19,8 +18,6 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Footer from '../footer/footer';
-
-const theme = createTheme();
 
 interface resBody {
   ok: boolean;
@@ -81,7 +78,7 @@ export default function SignUp() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Header />
       <Box sx={{ margin: 5 }}>
         <Stepper activeStep={1} alternativeLabel>
@@ -182,6 +179,6 @@ export default function SignUp() {
         </Box>
       </Container>
       <Footer />
-    </ThemeProvider>
+    </>
   );
 }

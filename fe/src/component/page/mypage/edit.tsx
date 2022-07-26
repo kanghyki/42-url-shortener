@@ -8,13 +8,10 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ENDPOINT } from '../../../config';
 import Alert from '@mui/material/Alert';
 import Header from '../../header/header';
 import Footer from '../../footer/footer';
-
-const theme = createTheme();
 
 interface resBody {
   ok: boolean;
@@ -70,7 +67,7 @@ export default function EditUser() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Header />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -138,6 +135,6 @@ export default function EditUser() {
         </Box>
       </Container>
       <Footer />
-    </ThemeProvider>
+    </>
   );
 }

@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  createTheme,
-  ThemeProvider,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -13,8 +6,6 @@ import { ENDPOINT } from '../../../config';
 import Footer from '../../footer/footer';
 import Header from '../../header/header';
 import Url from './url';
-
-const theme = createTheme();
 
 const LineContainer = styled.div`
   display: flex;
@@ -171,7 +162,7 @@ function Mypage() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Header />
       <Container component="main" maxWidth="xs">
         <Box
@@ -224,7 +215,7 @@ function Mypage() {
         )}
         <Footer />
       </Container>
-    </ThemeProvider>
+    </>
   );
 }
 

@@ -6,12 +6,9 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ENDPOINT } from '../../../config';
 import Header from '../../header/header';
 import Footer from '../../footer/footer';
-
-const theme = createTheme();
 
 interface resBody {
   ok: boolean;
@@ -50,7 +47,7 @@ const Delete = async () => {
 
 export default function DeleteUser() {
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Header />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -87,6 +84,6 @@ export default function DeleteUser() {
         </Box>
       </Container>
       <Footer />
-    </ThemeProvider>
+    </>
   );
 }

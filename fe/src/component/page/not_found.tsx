@@ -1,19 +1,21 @@
-import styled from 'styled-components';
+import { Typography } from '@mui/material';
 import Footer from '../footer/footer';
 import Header from '../header/header';
-
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-`;
 
 function NotFound() {
   return (
     <div>
       <Header />
-      <Container>
+      <Typography
+        component="h2"
+        variant="h5"
+        color="inherit"
+        align="center"
+        noWrap
+        sx={{ flex: 1 }}
+      >
         <h1>404 Not found</h1>
-      </Container>
+      </Typography>
       <Footer />
     </div>
   );
