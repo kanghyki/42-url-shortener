@@ -62,7 +62,7 @@ const getUser = async () => {
   };
   const res = await fetch(url, option);
   if (!res.ok) {
-    document.location.href = '/login';
+    document.location.href = '/signin';
     return;
   }
   const json = await res.json();
