@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Footer from '../footer/footer';
 import Header from '../header/header';
 
 const Container = styled.div`
@@ -13,6 +14,7 @@ function Wrong() {
       <Container>
         <h1>Something went wrong</h1>
       </Container>
+      <Footer />
     </div>
   );
 }

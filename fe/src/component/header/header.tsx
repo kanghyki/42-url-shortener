@@ -1,126 +1,69 @@
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { ENDPOINT } from '../../config';
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 16px 50px 16px 50px;
-  margin-bottom: 30px;
-  background-color: #1c2033;
-`;
-
-const LeftContainer = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: left;
-`;
-
-const RightContainer = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const Blank = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const Links = styled(Link)`
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  justify-content: space-between;
-  text-decoration: none;
-  &:focus,
-  &:hover,
-  &:visited,
-  &:link,
-  &:active {
-    text-decoration: none;
-  }
-`;
-
-const Title = styled.div`
-  font-size: 25px;
-  font-weight: bold;
-  color: #ffffff;
-`;
-
-const SubTitle = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  color: #ffffff;
-`;
-
-const Button = styled.button`
-  width: 70px;
-  height: 35px;
-  border-radius: 5px;
-  border: 1px solid white;
-  background-color: inherit;
-  color: white;
-  &:hover {
-    color: gray;
-    border-color: gray;
-    transition: border-color 0.5s;
-  }
-`;
+import * as React from 'react';
+import Toolbar from '@mui/material/Toolbar';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 
 function Header() {
-  const [token, setToken] = useState(false);
-  useEffect(() => {
+  const [isLogin, setIsLogin] = React.useState(false);
+  React.useEffect(() => {
     const token = localStorage.getItem('token');
     if (token === null) {
-      setToken(false);
+      setIsLogin(false);
     } else {
-      setToken(true);
+      setIsLogin(true);
     }
   }, []);
 
-  const deleteToken = () => {
+  const logout = () => {
     localStorage.removeItem('token');
     document.location.href = '/';
   };
 
-  const regi = `${ENDPOINT}/auth/42register`;
-
   return (
-    <Container>
-      <LeftContainer>
-        <Links to="/">
-          <Title>42 URL shortener</Title>
-        </Links>
-      </LeftContainer>
-      <Blank />
-      <RightContainer>
-        <SubTitle />
-        <SubTitle />
-        <SubTitle />
-        <SubTitle />
-        <SubTitle />
-        {token ? (
-          <>
-            <Links to="/mypage">
-              <SubTitle>My page</SubTitle>
-            </Links>
-            <Button onClick={deleteToken}>Logout</Button>
-          </>
+    <React.Fragment>
+      <Toolbar sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <Button size="small">Home</Button>
+        </Link>
+        <Typography
+          component="h2"
+          variant="h5"
+          color="inherit"
+          align="center"
+          noWrap
+          sx={{ flex: 1 }}
+        >
+          42 URL Shortener
+        </Typography>
+        {isLogin ? (
+          <Button variant="outlined" size="small" onClick={logout}>
+            Sign Out
+          </Button>
         ) : (
-          <>
-            <a href={regi}>
-              <Button>Register</Button>
-            </a>
-            <Links to="/login">
-              <Button>Login</Button>
-            </Links>
-          </>
+          <Link href="/signin" style={{ textDecoration: 'none' }}>
+            <Button variant="outlined" size="small">
+              Sign in
+            </Button>
+          </Link>
         )}
-      </RightContainer>
-    </Container>
+      </Toolbar>
+      {isLogin ? (
+        <Toolbar sx={{ justifyContent: 'right', overflowX: 'auto' }}>
+          <Link
+            color="inherit"
+            noWrap
+            variant="body2"
+            href="/mypage"
+            sx={{ p: 1, flexShrink: 0 }}
+          >
+            My page
+          </Link>
+        </Toolbar>
+      ) : (
+        <></>
+      )}
+    </React.Fragment>
   );
 }
 

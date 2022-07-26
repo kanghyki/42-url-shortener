@@ -1,43 +1,20 @@
+import {
+  Box,
+  Button,
+  Container,
+  createTheme,
+  ThemeProvider,
+  Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { ENDPOINT } from '../../config';
-import Header from '../header/header';
+import { ENDPOINT } from '../../../config';
+import Footer from '../../footer/footer';
+import Header from '../../header/header';
 import Url from './url';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const Button = styled.button`
-  border-radius: 5px;
-  border: none;
-  background-color: gray;
-  color: white;
-  margin: 20px;
-  padding: 10px 15px;
-  font-size: 15px;
-  &:hover {
-    background-color: #4caf50;
-    transition: background-color 0.3s;
-  }
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-`;
-
-const UserContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  margin: 50px;
-  padding: 30px;
-  border-radius: 0px;
-`;
+const theme = createTheme();
 
 const LineContainer = styled.div`
   display: flex;
@@ -51,13 +28,6 @@ const LineContent = styled.div`
   display: flex;
   align-items: left;
   width: 50%;
-`;
-
-const InfoContrainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 30%;
 `;
 
 const Links = styled(Link)`
@@ -132,7 +102,7 @@ function Mypage() {
 
   const makeUserInfoContainer = () => {
     return (
-      <>
+      <Typography>
         <LineContainer>
           <LineContent>42-Intra ID</LineContent>
           <LineContent>{user.intraID}</LineContent>
@@ -157,18 +127,22 @@ function Mypage() {
           <LineContent>updatedAt</LineContent>
           <LineContent>{user.updatedAt}</LineContent>
         </LineContainer>
-      </>
+      </Typography>
     );
   };
 
   const makeButtonContainer = () => {
     return (
       <>
-        <Links to="/edit">
-          <Button>Change Password</Button>
+        <Links to="/mypage/edit">
+          <Button variant="outlined" color="secondary" sx={{ margin: 3 }}>
+            Change password
+          </Button>
         </Links>
-        <Links to="/delete">
-          <Button>Delete Account</Button>
+        <Links to="/mypage/delete">
+          <Button variant="outlined" color="error" sx={{ margin: 3 }}>
+            Delete account
+          </Button>
         </Links>
       </>
     );
@@ -177,7 +151,16 @@ function Mypage() {
   const makeURLs = () => {
     return (
       <>
-        <h1>Shorten URL List</h1>
+        <Typography
+          component="h2"
+          variant="h5"
+          color="inherit"
+          align="center"
+          noWrap
+          sx={{ flex: 1 }}
+        >
+          Shorten URL List
+        </Typography>
         {user.urls.map((url, index) => (
           <div key={index}>
             <Url url={url} />
@@ -188,21 +171,60 @@ function Mypage() {
   };
 
   return (
-    <div>
+    <ThemeProvider theme={theme}>
       <Header />
-      <Container>
-        <h1>My Page</h1>
-        {user.isActive ? (
-          <UserContainer>
-            <InfoContrainer>{makeUserInfoContainer()}</InfoContrainer>
-            <ButtonContainer>{makeButtonContainer()}</ButtonContainer>
-            {user.urls.length === 0 ? <h1>No URL</h1> : makeURLs()}
-          </UserContainer>
-        ) : (
-          <></>
-        )}
+      <Container component="main" maxWidth="xs">
+        <Box
+          component="form"
+          noValidate
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Typography
+            component="h2"
+            variant="h5"
+            color="inherit"
+            align="center"
+            noWrap
+            sx={{ flex: 1 }}
+          >
+            My page
+          </Typography>
+          {user.isActive ? (
+            <Box
+              sx={{
+                alignItems: 'center',
+              }}
+            >
+              <Box sx={{ marginTop: 3 }}>{makeUserInfoContainer()}</Box>
+              <Box sx={{ display: 'flex' }}>{makeButtonContainer()}</Box>
+            </Box>
+          ) : (
+            <></>
+          )}
+        </Box>
       </Container>
-    </div>
+      <Container component="main" maxWidth="sm">
+        {user.urls.length === 0 ? (
+          <Typography
+            component="h2"
+            variant="h5"
+            color="inherit"
+            align="center"
+            noWrap
+            sx={{ flex: 1 }}
+          >
+            No URL
+          </Typography>
+        ) : (
+          makeURLs()
+        )}
+        <Footer />
+      </Container>
+    </ThemeProvider>
   );
 }
 

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Footer from '../footer/footer';
 import Header from '../header/header';
 
 const Container = styled.div`
@@ -13,6 +14,7 @@ function NotFound() {
       <Container>
         <h1>404 Not found</h1>
       </Container>
+      <Footer />
     </div>
   );
 }

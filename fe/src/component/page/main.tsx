@@ -1,52 +1,18 @@
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  createTheme,
+  TextField,
+  ThemeProvider,
+} from '@mui/material';
 import { useState } from 'react';
-import styled from 'styled-components';
 import { ENDPOINT, REDIRECT_ENDPOINT } from '../../config';
+import Footer from '../footer/footer';
 import Header from '../header/header';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const Input = styled.input`
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #000000;
-  width: 500px;
-  margin: 10px;
-  font-size: 30px;
-  &:focus {
-    outline: none;
-  }
-`;
-
-const Button = styled.button`
-  width: 100px;
-  height: 50px;
-  border-radius: 5px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  margin: 20px;
-  &:hover {
-    background-color: gray;
-    transition: background-color 0.3s;
-  }
-`;
-
-const GeneratorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 1000px;
-  height: 150px;
-`;
-
-const URLContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+const theme = createTheme();
 
 interface resBody {
   ok: boolean;
@@ -64,11 +30,7 @@ const falseObject: resBody = {
   },
 };
 
-const CreateURL = async (originURL: string): Promise<resBody> => {
-  if (originURL.length <= 0) {
-    alert('Please input text in box');
-    return falseObject;
-  }
+const CreateURL = async (originURL: any): Promise<resBody> => {
   const url = `${ENDPOINT}/url/`;
   const option = {
     method: 'POST',
@@ -83,7 +45,7 @@ const CreateURL = async (originURL: string): Promise<resBody> => {
   const res = await fetch(url, option);
   if (!res.ok) {
     alert('Check Login');
-    document.location.href = '/login';
+    document.location.href = '/signin';
     return falseObject;
   }
   const json = await res.json();
@@ -97,7 +59,7 @@ const CreateURL = async (originURL: string): Promise<resBody> => {
 };
 
 function Main() {
-  const [originURL, setOriginURL] = useState('');
+  const [error, setError] = useState(false);
   const [body, setBody] = useState({
     ok: false,
     result: {
@@ -106,17 +68,47 @@ function Main() {
       called: 0,
     },
   });
-  const onChangeOriginURL = (e: any) => {
-    setOriginURL(e.target.value);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const url = data.get('url');
+    if (url === '') {
+      setError(true);
+      setTimeout(() => {
+        setError(false);
+      }, 3000);
+      return;
+    }
+    const body = await CreateURL(url);
+    setBody(body);
   };
 
-  const MakeCreatedURLContainer = () => {
+  const GeneratedURL = () => {
+    const value = `${REDIRECT_ENDPOINT}/${body.result.shortURL}`;
     return (
-      <GeneratorContainer>
-        <div>
-          Generated: {REDIRECT_ENDPOINT}/{body.result.shortURL}
-        </div>
+      <Box
+        component="form"
+        noValidate
+        sx={{
+          marginTop: 5,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <TextField
+          margin="normal"
+          fullWidth
+          label="Generated URL"
+          defaultValue={value}
+          InputProps={{
+            readOnly: true,
+          }}
+        />
         <Button
+          variant="contained"
+          color="success"
           onClick={(e) => {
             navigator.clipboard.writeText(
               `${REDIRECT_ENDPOINT}/${body.result.shortURL}`,
@@ -125,40 +117,41 @@ function Main() {
         >
           Copy
         </Button>
-      </GeneratorContainer>
+      </Box>
     );
   };
 
   return (
-    <div>
+    <ThemeProvider theme={theme}>
       <Header />
-      <Container>
-        <h1>42 URL Shortener</h1>
-        <GeneratorContainer>
-          <URLContainer>
-            <Input
-              onChange={onChangeOriginURL}
-              placeholder="Shorten your URL"
-              onKeyDown={async (e) => {
-                if (e.key === 'Enter') {
-                  const ret = await CreateURL(originURL);
-                  setBody(ret);
-                }
-              }}
-            />
-          </URLContainer>
-          <Button
-            onClick={async () => {
-              const ret = await CreateURL(originURL);
-              setBody(ret);
-            }}
-          >
-            Shorten
+      <Container component="main" maxWidth="xs">
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <TextField
+            id="url"
+            name="url"
+            label="URL"
+            fullWidth
+            margin="normal"
+          />
+          <Button type="submit" variant="outlined" fullWidth>
+            Create
           </Button>
-        </GeneratorContainer>
-        <div>{body.ok === true ? MakeCreatedURLContainer() : <></>}</div>
+        </Box>
+        {error ? <Alert severity="error">Input box is required</Alert> : <></>}
+        <div>{body.ok === true ? GeneratedURL() : <></>}</div>
       </Container>
-    </div>
+      <Footer />
+    </ThemeProvider>
   );
 }
 

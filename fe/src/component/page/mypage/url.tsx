@@ -1,11 +1,7 @@
+import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 import styled from 'styled-components';
-import { ENDPOINT, REDIRECT_ENDPOINT } from '../../config';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+import { ENDPOINT, REDIRECT_ENDPOINT } from '../../../config';
 
 const Input = styled.input`
   background: transparent;
@@ -45,16 +41,6 @@ const SmallButton = styled.button`
   }
 `;
 
-const URLContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 650px;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
-`;
-
 const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -66,6 +52,7 @@ const URLInfoContainer = styled.div`
   flex-direction: column;
   align-items: left;
   word-break: break-all;
+  width: 100%;
 `;
 
 const URL = styled.div`
@@ -176,8 +163,8 @@ function Url(props: Props) {
   }
 
   return (
-    <Container>
-      <URLContainer>
+    <Typography>
+      <Box sx={{ display: 'flex' }}>
         <URLInfoContainer>
           <URL>OriginURL: {props.url.originURL}</URL>
           <URL>
@@ -200,9 +187,9 @@ function Url(props: Props) {
             Copy
           </SmallButton>
         </ButtonContainer>
-      </URLContainer>
+      </Box>
       {editMode ? edit() : <></>}
-    </Container>
+    </Typography>
   );
 }
 
