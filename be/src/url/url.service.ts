@@ -19,14 +19,18 @@ export class URLService {
   ) {}
 
   async checkURLOwnership(username: string, url: string) {
-    const user: User = await this.userRepository.findOneBy({
-      username: username,
-    });
-    const findURL: URL = await this.urlRepository.findOne({
-      relations: { user: true },
-      where: { shortURL: url },
-    });
-    if (user === null || findURL === null || findURL.user.id !== user.id) {
+    try {
+      const user: User = await this.userRepository.findOneBy({
+        username: username,
+      });
+      const findURL: URL = await this.urlRepository.findOne({
+        relations: { user: true },
+        where: { shortURL: url },
+      });
+      if (!user || !findURL || findURL.user.id !== user.id) {
+        return false;
+      }
+    } catch {
       return false;
     }
     return true;
@@ -49,12 +53,11 @@ export class URLService {
     let shortenURL: string = await this.encodeURL(originURL);
     let count = 0;
     while (
-      (await this.urlRepository.findOneBy({
-        shortURL: shortenURL,
-      })) !== null
+      (await this.urlRepository.findOneBy({ shortURL: shortenURL })) !== null
     ) {
       if (count > 10) {
-        return '';
+        shortenURL = '';
+        break;
       }
       shortenURL = await this.encodeURL(originURL);
       count += 1;
@@ -74,13 +77,13 @@ export class URLService {
   async createURL(
     jwtUser: JwtUser,
     body: CreateURLDTO,
-  ): Promise<CreateURLResponseDTO> {
+  ): Promise<CreateURLResponseDTO | DefaultResponseDTO> {
     if ((await this.checkHealthURL(body.originURL)) === false) {
-      return { ok: false, msg: 'Unhealth Origin URL Server', result: null };
+      return { ok: false, msg: 'Unhealth Origin URL Server' };
     }
     const shortenURL: string = await this.getShortifiedURL(body.originURL);
     if (shortenURL === '') {
-      return { ok: false, msg: 'Shortify Error', result: null };
+      return { ok: false, msg: 'Shortify Error' };
     }
     const user: User = await this.userRepository.findOneBy({
       username: jwtUser.username,
@@ -98,7 +101,6 @@ export class URLService {
       return {
         ok: false,
         msg: 'Something went wrong while generating the URL',
-        result: null,
       };
     }
   }

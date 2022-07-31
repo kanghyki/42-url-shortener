@@ -13,7 +13,9 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async getUser(jwtUser: JwtUser): Promise<GetUserResponseDTO> {
+  async getUser(
+    jwtUser: JwtUser,
+  ): Promise<GetUserResponseDTO | DefaultResponseDTO> {
     const user: User = await this.userRepository.findOne({
       relations: {
         urls: true,
@@ -23,7 +25,7 @@ export class UserService {
       },
     });
     if (!user) {
-      return { ok: false, msg: 'Failed to get user', result: null };
+      return { ok: false, msg: 'Failed to get user' };
     }
     user.id = undefined;
     user.password = undefined;

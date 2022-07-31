@@ -22,7 +22,7 @@ export class URLController {
   async createURL(
     @Req() req: JwtUserRequest,
     @Body() body: CreateURLDTO,
-  ): Promise<CreateURLResponseDTO> {
+  ): Promise<CreateURLResponseDTO | DefaultResponseDTO> {
     return await this.urlService.createURL(req.user, body);
   }
 

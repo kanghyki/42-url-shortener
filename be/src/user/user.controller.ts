@@ -21,7 +21,9 @@ export class UserController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  async getUser(@Req() req: JwtUserRequest): Promise<GetUserResponseDTO> {
+  async getUser(
+    @Req() req: JwtUserRequest,
+  ): Promise<GetUserResponseDTO | DefaultResponseDTO> {
     return await this.userService.getUser(req.user);
   }
 
