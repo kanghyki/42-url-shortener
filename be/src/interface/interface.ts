@@ -1,6 +1,3 @@
-import { URL } from 'src/entity/url.entity';
-import { User } from 'src/entity/user.entity';
-
 export interface JwtUser {
   username: string;
   id: number;
@@ -34,21 +31,4 @@ export interface LoginToken {
 
 export interface LoginRequest {
   user: LoginToken;
-}
-
-export interface CreateURLResponse {
-  ok: boolean;
-  msg: string;
-  result: URL;
-}
-
-export interface GetUserResponse {
-  ok: boolean;
-  msg: string;
-  result: User;
-}
-
-export interface DefaultResponse {
-  ok: boolean;
-  msg: string;
 }

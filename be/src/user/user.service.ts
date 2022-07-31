@@ -3,13 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { Register42UserDTO, UpdateUserDTO } from '../dto/user.dto';
-import {
-  DefaultResponse,
-  FTUser,
-  GetUserResponse,
-  JwtUser,
-} from 'src/interface/interface';
+import { FTUser, JwtUser } from 'src/interface/interface';
 import * as bcrypt from 'bcrypt';
+import { DefaultResponseDTO, GetUserResponseDTO } from 'src/dto/response.dto';
 
 @Injectable()
 export class UserService {
@@ -17,7 +13,7 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async getUser(jwtUser: JwtUser): Promise<GetUserResponse> {
+  async getUser(jwtUser: JwtUser): Promise<GetUserResponseDTO> {
     const user: User = await this.userRepository.findOne({
       relations: {
         urls: true,
@@ -38,7 +34,7 @@ export class UserService {
   async createNewUser(
     ftUser: FTUser,
     body: Register42UserDTO,
-  ): Promise<DefaultResponse> {
+  ): Promise<DefaultResponseDTO> {
     const user: User = await this.userRepository.findOneBy({
       username: body.username,
     });
@@ -63,7 +59,7 @@ export class UserService {
   async updateUser(
     jwtUser: JwtUser,
     body: UpdateUserDTO,
-  ): Promise<DefaultResponse> {
+  ): Promise<DefaultResponseDTO> {
     const user: User = await this.userRepository.findOneBy({
       username: jwtUser.username,
     });
@@ -85,7 +81,7 @@ export class UserService {
     }
   }
 
-  async deleteUser(jwtUser: JwtUser): Promise<DefaultResponse> {
+  async deleteUser(jwtUser: JwtUser): Promise<DefaultResponseDTO> {
     try {
       await this.userRepository.delete({
         username: jwtUser.username,

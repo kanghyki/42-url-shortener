@@ -5,13 +5,10 @@ import { Repository } from 'typeorm';
 import { URL } from '../entity/url.entity';
 import { User } from 'src/entity/user.entity';
 import { CreateURLDTO, DeleteURLDTO, UpdateURLDTO } from '../dto/url.dto';
-import {
-  CreateURLResponse,
-  DefaultResponse,
-  JwtUser,
-} from 'src/interface/interface';
+import { JwtUser } from 'src/interface/interface';
 import * as bcrypt from 'bcrypt';
 import * as base62 from 'base62-ts';
+import { CreateURLResponseDTO, DefaultResponseDTO } from 'src/dto/response.dto';
 
 @Injectable()
 export class URLService {
@@ -77,7 +74,7 @@ export class URLService {
   async createURL(
     jwtUser: JwtUser,
     body: CreateURLDTO,
-  ): Promise<CreateURLResponse> {
+  ): Promise<CreateURLResponseDTO> {
     if ((await this.checkHealthURL(body.originURL)) === false) {
       return { ok: false, msg: 'Unhealth Origin URL Server', result: null };
     }
@@ -109,7 +106,7 @@ export class URLService {
   async deleteURL(
     jwtUser: JwtUser,
     body: DeleteURLDTO,
-  ): Promise<DefaultResponse> {
+  ): Promise<DefaultResponseDTO> {
     if (
       (await this.checkURLOwnership(jwtUser.username, body.shortURL)) === false
     ) {
@@ -131,7 +128,7 @@ export class URLService {
   async updateURL(
     jwtUser: JwtUser,
     body: UpdateURLDTO,
-  ): Promise<DefaultResponse> {
+  ): Promise<DefaultResponseDTO> {
     if (
       (await this.checkURLOwnership(jwtUser.username, body.shortURL)) === false
     ) {
