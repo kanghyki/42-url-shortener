@@ -78,7 +78,7 @@ export class URLService {
     jwtUser: JwtUser,
     body: CreateURLDTO,
   ): Promise<CreateURLResponseDTO | DefaultResponseDTO> {
-    if ((await this.checkHealthURL(body.originURL)) === false) {
+    if (!(await this.checkHealthURL(body.originURL))) {
       return { ok: false, msg: 'Unhealth Origin URL Server' };
     }
     const shortenURL: string = await this.getShortifiedURL(body.originURL);
@@ -109,9 +109,7 @@ export class URLService {
     jwtUser: JwtUser,
     body: DeleteURLDTO,
   ): Promise<DefaultResponseDTO> {
-    if (
-      (await this.checkURLOwnership(jwtUser.username, body.shortURL)) === false
-    ) {
+    if (!(await this.checkURLOwnership(jwtUser.username, body.shortURL))) {
       return { ok: false, msg: 'You have not Ownership' };
     }
     try {
@@ -131,9 +129,7 @@ export class URLService {
     jwtUser: JwtUser,
     body: UpdateURLDTO,
   ): Promise<DefaultResponseDTO> {
-    if (
-      (await this.checkURLOwnership(jwtUser.username, body.shortURL)) === false
-    ) {
+    if (!(await this.checkURLOwnership(jwtUser.username, body.shortURL))) {
       return { ok: false, msg: 'You have not Ownership' };
     }
     if (
@@ -150,7 +146,6 @@ export class URLService {
       const ret: URL = await this.urlRepository.save(findURL);
       ret.id = undefined;
       ret.user = undefined;
-      // TODO: result
       return { ok: true, msg: 'Update URL' };
     } catch {
       return {
