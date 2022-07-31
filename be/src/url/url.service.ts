@@ -5,8 +5,11 @@ import { Repository } from 'typeorm';
 import { URL } from '../entity/url.entity';
 import { User } from 'src/entity/user.entity';
 import { CreateURLDTO, DeleteURLDTO, UpdateURLDTO } from '../dto/url.dto';
-import { ReturnDTO } from 'src/dto/return.dto';
-import { JwtUser } from 'src/interface/interface';
+import {
+  CreateURLResponse,
+  DefaultResponse,
+  JwtUser,
+} from 'src/interface/interface';
 import * as bcrypt from 'bcrypt';
 import * as base62 from 'base62-ts';
 
@@ -71,7 +74,10 @@ export class URLService {
     return true;
   }
 
-  async createURL(jwtUser: JwtUser, body: CreateURLDTO): Promise<ReturnDTO> {
+  async createURL(
+    jwtUser: JwtUser,
+    body: CreateURLDTO,
+  ): Promise<CreateURLResponse> {
     if ((await this.checkHealthURL(body.originURL)) === false) {
       return { ok: false, msg: 'Unhealth Origin URL Server', result: null };
     }
@@ -100,31 +106,41 @@ export class URLService {
     }
   }
 
-  async deleteURL(jwtUser: JwtUser, body: DeleteURLDTO): Promise<ReturnDTO> {
+  async deleteURL(
+    jwtUser: JwtUser,
+    body: DeleteURLDTO,
+  ): Promise<DefaultResponse> {
     if (
       (await this.checkURLOwnership(jwtUser.username, body.shortURL)) === false
     ) {
-      return { ok: false, msg: 'You have not Ownership', result: null };
+      return { ok: false, msg: 'You have not Ownership' };
     }
-    const ret: any = await this.urlRepository.delete({
-      shortURL: body.shortURL,
-    });
-    if (ret.affected <= 0) {
-      return { ok: false, msg: 'Failed to delete URL', result: null };
+    try {
+      await this.urlRepository.delete({
+        shortURL: body.shortURL,
+      });
+      return { ok: true, msg: 'Delete URL' };
+    } catch {
+      return {
+        ok: false,
+        msg: 'Something went wrong while deleting the URL',
+      };
     }
-    return { ok: true, msg: 'Delete URL', result: null };
   }
 
-  async updateURL(jwtUser: JwtUser, body: UpdateURLDTO): Promise<ReturnDTO> {
+  async updateURL(
+    jwtUser: JwtUser,
+    body: UpdateURLDTO,
+  ): Promise<DefaultResponse> {
     if (
       (await this.checkURLOwnership(jwtUser.username, body.shortURL)) === false
     ) {
-      return { ok: false, msg: 'You have not Ownership', result: null };
+      return { ok: false, msg: 'You have not Ownership' };
     }
     if (
       (await this.urlRepository.findOneBy({ shortURL: body.newURL })) !== null
     ) {
-      return { ok: false, msg: 'Duplicated URL', result: null };
+      return { ok: false, msg: 'Duplicated URL' };
     }
     const findURL: URL = await this.urlRepository.findOneBy({
       shortURL: body.shortURL,
@@ -135,12 +151,12 @@ export class URLService {
       const ret: URL = await this.urlRepository.save(findURL);
       ret.id = undefined;
       ret.user = undefined;
-      return { ok: true, msg: 'Update URL', result: ret };
+      // TODO: result
+      return { ok: true, msg: 'Update URL' };
     } catch {
       return {
         ok: false,
         msg: 'Something went wrong while updating the URL',
-        result: null,
       };
     }
   }

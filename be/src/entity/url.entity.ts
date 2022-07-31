@@ -23,7 +23,7 @@ export class URL {
   @Column()
   called: number;
 
-  @ManyToOne(() => User, (user) => user.urls, {
+  @ManyToOne(() => User, user => user.urls, {
     onDelete: 'CASCADE',
     nullable: true,
   })

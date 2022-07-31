@@ -41,6 +41,6 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(() => URL, (url) => url.user)
+  @OneToMany(() => URL, url => url.user)
   urls: URL[];
 }

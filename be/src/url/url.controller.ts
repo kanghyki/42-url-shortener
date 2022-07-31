@@ -8,7 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ReturnDTO } from 'src/dto/return.dto';
+import {
+  CreateURLResponse,
+  DefaultResponse,
+  JwtUserRequest,
+} from 'src/interface/interface';
 import { CreateURLDTO, DeleteURLDTO, UpdateURLDTO } from '../dto/url.dto';
 import { URLService } from './url.service';
 
@@ -19,27 +23,27 @@ export class URLController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   async createURL(
-    @Req() req: any,
+    @Req() req: JwtUserRequest,
     @Body() body: CreateURLDTO,
-  ): Promise<ReturnDTO> {
+  ): Promise<CreateURLResponse> {
     return await this.urlService.createURL(req.user, body);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete()
   async deleteURL(
-    @Req() req: any,
+    @Req() req: JwtUserRequest,
     @Body() body: DeleteURLDTO,
-  ): Promise<ReturnDTO> {
+  ): Promise<DefaultResponse> {
     return await this.urlService.deleteURL(req.user, body);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch()
   async UpdateURL(
-    @Req() req: any,
+    @Req() req: JwtUserRequest,
     @Body() body: UpdateURLDTO,
-  ): Promise<ReturnDTO> {
+  ): Promise<DefaultResponse> {
     return await this.urlService.updateURL(req.user, body);
   }
 }
